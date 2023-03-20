@@ -105,7 +105,7 @@
             android:maxLength="3" />
 
         <Button
-            android:id="@+id/refister_bt_ok"
+            android:id="@+id/register_bt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
