@@ -43,5 +43,28 @@
             android:layout_height="wrap_content"
             android:text="Login"
             android:layout_gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="50dp">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New user ?"
+                android:gravity="center"
+                android:layout_marginEnd="20dp"/>
+
+            <Button
+                android:id="@+id/login_bt_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Register"/>
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
