@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Customer Application</string>
+    <string name="order_info">Order Information:</string>
+    <string name="bt_see_basket">See all products</string>
+    <string name="tv_price">Total Price: </string>
+    <string name="tv_sel_voucher"> Select Voucher id: </string>
+    <string name="spinner">None</string>
+    <string name="spinner_description">Select the id of the voucher you want to use</string>
+    <string name="tv_proceed_payment">Proceed to payment:</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="cb_discount_accu">Use discount accumulated</string>
 </resources>
