@@ -12,11 +12,11 @@
 
 ### Pages
 
-- Main activity (Layout with option to Register or Login)
-    -if register -> Register Activity
-    -if login -> login activity
-        -Login successfull -> Home activity
-        -Login no successfull -> RegisterAcivity
+- Main activity (Login Activity)
+  - if login
+    - Login successfull -> Home activity
+    - Login no successfull -> Error message
+  - if register -> Register Activity
     
 - Home Activity 
     - Order button (To see info about order and confirm it to checkout) -> order activity
