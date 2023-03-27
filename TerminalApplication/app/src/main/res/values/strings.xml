@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TerminalApplication</string>
+    <string name="welcome_text">Welcome to your favorite Supermarket!</string>
+    <string name="positive_result_text">nice! your transaction has been successfully processed. </string>
+    <string name="negative_result_text">We are sorry, your transaction was not successfully processed. </string>
+    <string name="open_gate">Gate opens!</string>
+    <string name="closed_gate">Gate are closed</string>
+    <string name="thanks_message">Thank you!</string>
 </resources>
