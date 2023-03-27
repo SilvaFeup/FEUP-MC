@@ -28,7 +28,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:padding="32dp"
-        android:text="Ckeckout"
+        android:text="Checkout"
         android:textColor="@color/black"
         android:backgroundTint="@color/blue_color"
         android:elevation="4dp"

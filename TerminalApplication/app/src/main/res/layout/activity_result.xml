@@ -21,6 +21,7 @@
         />
 
     <TextView
+        android:id="@+id/result_tv_doorMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="128dp"
@@ -39,6 +40,7 @@
         android:layout_marginRight="32dp">
 
         <Button
+            android:id="@+id/result_bt_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/blue_color"
@@ -49,6 +51,7 @@
             android:elevation="4dp"/>
         
         <TextView
+            android:id="@+id/result_tv_thanks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
