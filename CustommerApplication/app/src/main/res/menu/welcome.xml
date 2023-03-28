@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:icon="@drawable/baseline_discount_24"
+        android:title="@string/see_vouchers"
+        app:showAsAction="ifRoom" />
+    <item
+        android:icon="@drawable/baseline_list_24"
+        android:title="@string/see_transactions"
+        app:showAsAction="ifRoom" />
+    <item
+        android:icon="@drawable/baseline_shopping_cart_24"
+        android:title="@string/see_shopping_cart"
+        app:showAsAction="ifRoom"></item>
+</menu>

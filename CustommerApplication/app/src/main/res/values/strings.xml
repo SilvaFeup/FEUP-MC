@@ -11,4 +11,9 @@
     <string name="no">No</string>
     <string name="cb_discount_accu">Use discount accumulated</string>
     <string name="app_bar_name">Acme Electronic Supermarket</string>
+    <string name="bt_wel_order">Order products</string>
+    <string name="welcome_str">Welcome Username</string>
+    <string name="see_vouchers">See vouchers</string>
+    <string name="see_transactions">See transactions</string>
+    <string name="see_shopping_cart">See shopping cart</string>
 </resources>
