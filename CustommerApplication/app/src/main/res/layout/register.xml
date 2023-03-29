@@ -110,7 +110,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:text="Register" />
+            android:text="Register"
+            android:backgroundTint="@color/blue"
+            android:textColor="@color/black"/>
 
     </LinearLayout>
 
