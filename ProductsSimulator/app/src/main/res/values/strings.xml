@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ProductsSimulator</string>
+    <string name="QR_name">name</string>
+    <string name="QR_price">price</string>
+</resources>
