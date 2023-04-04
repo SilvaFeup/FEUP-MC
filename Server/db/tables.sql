@@ -14,9 +14,9 @@ CREATE TABLE User (
 
     id INTEGER PRIMARY KEY,
     email TEXT NOT NULL UNIQUE,
+    username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    first_name TEXT NOT NULL,
-    last_name  TEXT NOT NULL,
+    name TEXT NOT NULL,
     taxpayer_number TEXT NOT NULL,
     public_key TEXT NOT NULL,
     payment_card INTEGER REFERENCES PaymentCard(id)
@@ -86,5 +86,15 @@ CREATE TABLE Qrcode (
   qr_code_data VARCHAR(255)
 );
 
+
+INSERT INTO User (email,username, password, name, taxpayer_number, public_key,payment_card) VALUES(
+    'silva@gmail.com',
+    'silva_cm',
+    '25d55ad283aa400af464c76d713c07ad',
+    'Joao',
+    '222 222 222',  
+    'OpenSSLRSAPublicKey{modulus=b2793dc5472b4928df549105133e1110e2c987c75c9c5ec81b7007de370a6268bd48e4aadb1266b8abb8f9e5ff21,publicExponent=10001}',
+    '123456789'
+);
 
 

@@ -1,15 +1,23 @@
 const path = require('path');
+const fs = require('fs');
 
-var db;
 
-(async () => {
-    const { Database } = await import('sqlite-async');
-    db = await Database.open(path.resolve('db/users.db'));
-    console.log('connected to users.db');
-  })();
+const init = async () => {
+  const { Database } = await import('sqlite-async');
 
-class Database {
-    
-}
+  const db = await Database.open(path.resolve('./db/database.db'));
+  // Read SQL file
+  const sql = fs.readFileSync(path.resolve('./db/tables.sql'), 'utf-8');
 
-module.exports = new Database();
+  // Run SQL commands
+  await db.exec(sql);
+
+  return db;
+};
+
+
+
+
+module.exports = {
+  init
+};
