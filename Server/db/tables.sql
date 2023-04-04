@@ -17,9 +17,8 @@ CREATE TABLE User (
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     name TEXT NOT NULL,
-    taxpayer_number TEXT NOT NULL,
     public_key TEXT NOT NULL,
-    payment_card INTEGER REFERENCES PaymentCard(id)
+    FOREIGN KEY payment_card INTEGER REFERENCES PaymentCard(id)
 
 );
 
@@ -75,8 +74,7 @@ CREATE TABLE PaymentCard (
     card_holder_name VARCHAR(255) NOT NULL,
     expiration_month INT NOT NULL,
     expiration_year INT NOT NULL,
-    cvv_code VARCHAR(4) NOT NULL,
-    user_id INTEGER REFERENCES User(id)
+    cvv_code VARCHAR(4) NOT NULL
 );
 
 
@@ -87,12 +85,11 @@ CREATE TABLE Qrcode (
 );
 
 
-INSERT INTO User (email,username, password, name, taxpayer_number, public_key,payment_card) VALUES(
+INSERT INTO User (email,username, password, name,  public_key,payment_card) VALUES(
     'silva@gmail.com',
     'silva_cm',
     '25d55ad283aa400af464c76d713c07ad',
-    'Joao',
-    '222 222 222',  
+    'Joao', 
     'OpenSSLRSAPublicKey{modulus=b2793dc5472b4928df549105133e1110e2c987c75c9c5ec81b7007de370a6268bd48e4aadb1266b8abb8f9e5ff21,publicExponent=10001}',
     '123456789'
 );
