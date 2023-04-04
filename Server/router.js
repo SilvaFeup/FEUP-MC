@@ -31,7 +31,7 @@ router.get('/users', async (ctx, next) => {
 router.post('/register', async (ctx, next) => {
     try {
         const db = await init();
-        const { name, email, username, password, card_number, card_holder_name,expiration_month, expiration_year, cvv_code} = ctx.request.body;
+        const { name, email, username, password, card_number, card_holder_name,expiration_month, expiration_year, cvv_code, public_key} = ctx.request.body;
     
         // Check if user already exists
         const userExists = await db.get('SELECT * FROM User WHERE email = ?', email);
@@ -56,7 +56,7 @@ router.post('/register', async (ctx, next) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
     
         // Insert new user into the database
-        const result = await db.run('INSERT INTO User (email,username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,to do,?)', [email, username, hashedPassword,name,card]);
+        const result = await db.run('INSERT INTO User (email,username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,? ,?)', [email, username, hashedPassword,name,public_key,card]);
         if (result.changes === 0) {
             throw new Error('Failed to register user');
         }
