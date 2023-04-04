@@ -93,7 +93,7 @@ router.post('/login', async (ctx, next) => {
     const { email, password } = ctx.request.body;
 
     // Find user by email
-    const user = await db.get('SELECT * FROM users WHERE email = ?', email);
+    const user = await db.get('SELECT * FROM User WHERE email = ?', email);
     if (!user) {
       ctx.status = 401;
       ctx.body = 'Email or password is incorrect';
