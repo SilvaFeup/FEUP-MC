@@ -14,7 +14,6 @@ CREATE TABLE User (
 
     id INTEGER PRIMARY KEY,
     uuid INTEGER NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     name TEXT NOT NULL,
