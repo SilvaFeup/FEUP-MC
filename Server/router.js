@@ -1,6 +1,7 @@
 const {init} = require('./db/database');
 const bcrypt = require('bcrypt');
 const Router = require('koa-router');
+const {v4: uuidv4} = require('uuid');
 
 const router = new Router();
 
@@ -51,18 +52,21 @@ router.post('/register', async (ctx, next) => {
 
         const card = await db.get('SELECT id FROM PaymentCard WHERE card_number = ?', card_number);
 
+        const unique_id = uuidv4(); 
+
         // Encrypt password
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
     
         // Insert new user into the database
-        const result = await db.run('INSERT INTO User (email,username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,? ,?)', [email, username, hashedPassword,name,public_key,card]);
+        const result = await db.run('INSERT INTO User (uuid,email,username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,? ,?)', [unique_id,email, username, hashedPassword,name,public_key,card]);
         if (result.changes === 0) {
             throw new Error('Failed to register user');
         }
     
-        ctx.status = 201;
-        ctx.body = 'User registered successfully';
+        // Return a success response with the UUID in the body
+        ctx.status = 200;
+        ctx.body = { message: 'User registered successfully', userId:unique_id };
     } catch (err) {
       // Handle errors
     }
