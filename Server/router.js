@@ -2,6 +2,7 @@ const {init} = require('./db/database');
 const bcrypt = require('bcrypt');
 const Router = require('koa-router');
 const {v4: uuidv4} = require('uuid');
+const { publicKey, privateKey } = require('./keys');
 
 const router = new Router();
 
@@ -31,42 +32,42 @@ router.get('/users', async (ctx, next) => {
 
 router.post('/register', async (ctx, next) => {
     try {
-        const db = await init();
-        const { name, email, username, password, card_number, card_holder_name,expiration_month, expiration_year, cvv_code, public_key} = ctx.request.body;
+      const db = await init();
+      const { name, email, username, password, card_number, card_holder_name,expiration_month, expiration_year, cvv_code, public_key} = ctx.request.body;
     
-        // Check if user already exists
-        const userExists = await db.get('SELECT * FROM User WHERE email = ?', email);
-        if (userExists) {
-            ctx.status = 409;
-            ctx.body = 'Email already registered';
-            return;
-        }
-
-        const result_paymentCard = await insertPaymentCardIntoDB(card_number,card_holder_name,expiration_month,expiration_year,cvv_code);
-
-        if(result_paymentCard == -1){
+      // Check if user already exists
+      const userExists = await db.get('SELECT * FROM User WHERE email = ?', email);
+      if (userExists) {
           ctx.status = 409;
-          ctx.body = 'Payment card already registered';
+          ctx.body = 'Email already registered';
           return;
-        }
+      }
 
-        const card = await db.get('SELECT id FROM PaymentCard WHERE card_number = ?', card_number);
+      const result_paymentCard = await insertPaymentCardIntoDB(card_number,card_holder_name,expiration_month,expiration_year,cvv_code);
 
-        const unique_id = uuidv4(); 
+      if(result_paymentCard == -1){
+        ctx.status = 409;
+        ctx.body = 'Payment card already registered';
+        return;
+      }
 
-        // Encrypt password
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const card = await db.get('SELECT id FROM PaymentCard WHERE card_number = ?', card_number);
+
+      const unique_id = uuidv4(); 
+
+      // Encrypt password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
     
-        // Insert new user into the database
-        const result = await db.run('INSERT INTO User (uuid,email,username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,? ,?)', [unique_id,email, username, hashedPassword,name,public_key,card]);
-        if (result.changes === 0) {
-            throw new Error('Failed to register user');
-        }
+      // Insert new user into the database
+      const result = await db.run('INSERT INTO User (uuid,email,username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,? ,?)', [unique_id,email, username, hashedPassword,name,public_key,card]);
+      if (result.changes === 0) {
+          throw new Error('Failed to register user');
+      }
     
-        // Return a success response with the UUID in the body
-        ctx.status = 200;
-        ctx.body = { message: 'User registered successfully', userId:unique_id };
+      // Return a success response with the UUID in the body
+      ctx.status = 200;
+      ctx.body = { message: 'User registered successfully', userId: unique_id,  supermarket_publickey: publicKey};
     } catch (err) {
       // Handle errors
     }
