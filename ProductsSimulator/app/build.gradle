@@ -39,5 +39,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.zxing:core:3.5.1'
+    //implementation 'javax.security.auth.x500.X500Principal:1.0.0'
+
+
 
 }
