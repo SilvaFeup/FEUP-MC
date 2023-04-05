@@ -33,13 +33,13 @@ router.get('/users', async (ctx, next) => {
 router.post('/register', async (ctx, next) => {
     try {
       const db = await init();
-      const { name, email, username, password, card_number, card_holder_name,expiration_month, expiration_year, cvv_code, public_key} = ctx.request.body;
+      const { name, username, password, card_number, card_holder_name,expiration_month, expiration_year, cvv_code, public_key} = ctx.request.body;
     
       // Check if user already exists
-      const userExists = await db.get('SELECT * FROM User WHERE email = ?', email);
+      const userExists = await db.get('SELECT * FROM User WHERE username = ?', username);
       if (userExists) {
           ctx.status = 409;
-          ctx.body = 'Email already registered';
+          ctx.body = 'username already registered';
           return;
       }
 
@@ -60,7 +60,7 @@ router.post('/register', async (ctx, next) => {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
     
       // Insert new user into the database
-      const result = await db.run('INSERT INTO User (uuid,email,username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,? ,?)', [unique_id,email, username, hashedPassword,name,public_key,card]);
+      const result = await db.run('INSERT INTO User (uuid, username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,? ,?)', [unique_id, username, hashedPassword,name,public_key,card]);
       if (result.changes === 0) {
           throw new Error('Failed to register user');
       }
@@ -95,13 +95,13 @@ async function insertPaymentCardIntoDB(card_number,card_holder_name,expiration_m
 router.post('/login', async (ctx, next) => {
   try {
     const db = await init();
-    const { email, password } = ctx.request.body;
+    const { username, password } = ctx.request.body;
 
-    // Find user by email
-    const user = await db.get('SELECT * FROM User WHERE email = ?', email);
+    // Find user by username
+    const user = await db.get('SELECT * FROM User WHERE username = ?', username);
     if (!user) {
       ctx.status = 401;
-      ctx.body = 'Email or password is incorrect';
+      ctx.body = 'username or password is incorrect';
       return;
     }
 
@@ -109,7 +109,7 @@ router.post('/login', async (ctx, next) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       ctx.status = 401;
-      ctx.body = 'Email or password is incorrect';
+      ctx.body = 'username or password is incorrect';
       return;
     }
 
