@@ -13,11 +13,11 @@ DROP TABLE IF EXISTS Qrcode;
 CREATE TABLE User (
 
     id INTEGER PRIMARY KEY,
+    uuid INTEGER NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
+    username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    first_name TEXT NOT NULL,
-    last_name  TEXT NOT NULL,
-    taxpayer_number TEXT NOT NULL,
+    name TEXT NOT NULL,
     public_key TEXT NOT NULL,
     payment_card INTEGER REFERENCES PaymentCard(id)
 
@@ -75,8 +75,7 @@ CREATE TABLE PaymentCard (
     card_holder_name VARCHAR(255) NOT NULL,
     expiration_month INT NOT NULL,
     expiration_year INT NOT NULL,
-    cvv_code VARCHAR(4) NOT NULL,
-    user_id INTEGER REFERENCES User(id)
+    cvv_code VARCHAR(4) NOT NULL
 );
 
 
@@ -85,6 +84,9 @@ CREATE TABLE Qrcode (
   id INT PRIMARY KEY,
   qr_code_data VARCHAR(255)
 );
+
+
+
 
 
 
