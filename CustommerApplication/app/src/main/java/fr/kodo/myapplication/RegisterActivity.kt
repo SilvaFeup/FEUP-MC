@@ -1,11 +1,14 @@
 package fr.kodo.myapplication
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import fr.kodo.myapplication.controller.RegisterController
+import java.net.PasswordAuthentication
 import java.security.MessageDigest
+import java.security.SecureRandom
 
 class RegisterActivity : AppCompatActivity() {
     val RegisterController = RegisterController()
@@ -27,28 +30,24 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         btRegister.setOnClickListener{
-            val md = MessageDigest.getInstance("SHA-256")
-
-            //TODO: Change the hash algorithm
-
             val name = edtName.text.toString()
             val nickname = edtNickname.text.toString()
-            val password = md.digest(edtPassword.text.toString().encodeToByteArray()).toString()
-            val confirmPassword = md.digest(edtConfirmPassword.text.toString().encodeToByteArray()).toString()
+            val password = PasswordAuthentication(nickname, edtPassword.text.toString().toCharArray())
+            val confirmPassword = PasswordAuthentication(nickname, edtConfirmPassword.text.toString().toCharArray())
             val cardNumber = edtCardNumber.text.toString()
             val cardHolderName = edtCardHolderName.text.toString()
             val cardExpirationDate = edtCardExpirationDate.text.toString()
             val cardCvvCode = edtCardSecurityCode.text.toString()
 
-            println(password)
-            println(confirmPassword)
+            var responseCode = -1
+            try {
+                responseCode = RegisterController.register(name, password, confirmPassword, cardNumber, cardHolderName, cardExpirationDate, cardCvvCode)
+            }catch (e: Exception) {
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                println(e.message)
+            }
 
-            if (name.isEmpty() || nickname.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || cardNumber.isEmpty() || cardHolderName.isEmpty() || cardExpirationDate.isEmpty() || cardCvvCode.isEmpty()) {
-                return@setOnClickListener
-            }
-            else {
-                RegisterController.register(name, nickname, password, confirmPassword, cardNumber, cardHolderName, cardExpirationDate, cardCvvCode)
-            }
+            Toast.makeText(this, "Registered : " + responseCode, Toast.LENGTH_SHORT).show()
         }
     }
 }
