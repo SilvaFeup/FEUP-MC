@@ -86,4 +86,4 @@ lint/tmp/
 
 
 # Database
-Server/db/database.db
+*.db
