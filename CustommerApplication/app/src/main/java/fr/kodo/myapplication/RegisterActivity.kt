@@ -1,14 +1,15 @@
 package fr.kodo.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import fr.kodo.myapplication.controller.RegisterController
 import java.net.PasswordAuthentication
-import java.security.MessageDigest
-import java.security.SecureRandom
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class RegisterActivity : AppCompatActivity() {
     val RegisterController = RegisterController()
@@ -20,7 +21,8 @@ class RegisterActivity : AppCompatActivity() {
 
     val edtCardNumber by lazy { findViewById<EditText>(R.id.register_edt_card_number) }
     val edtCardHolderName by lazy { findViewById<EditText>(R.id.register_edt_card_holder_name) }
-    val edtCardExpirationDate by lazy { findViewById<EditText>(R.id.register_edt_card_expiration_date) }
+    val edtCardExpirationMonth by lazy { findViewById<EditText>(R.id.register_edt_card_expiration_month) }
+    val edtCardExpirationYear by lazy { findViewById<EditText>(R.id.register_edt_card_expiration_year) }
     val edtCardSecurityCode by lazy { findViewById<EditText>(R.id.register_edt_card_security_code) }
 
     val btRegister by lazy { findViewById<Button>(R.id.register_bt_register) }
@@ -36,16 +38,25 @@ class RegisterActivity : AppCompatActivity() {
             val confirmPassword = PasswordAuthentication(nickname, edtConfirmPassword.text.toString().toCharArray())
             val cardNumber = edtCardNumber.text.toString()
             val cardHolderName = edtCardHolderName.text.toString()
-            val cardExpirationDate = edtCardExpirationDate.text.toString()
+            val cardExpirationMonth = edtCardExpirationMonth.text.toString().toInt();
+            val cardExpirationYear = edtCardExpirationYear.text.toString().toInt();
             val cardCvvCode = edtCardSecurityCode.text.toString()
 
             var responseCode = -1
-            try {
-                responseCode = RegisterController.register(name, password, confirmPassword, cardNumber, cardHolderName, cardExpirationDate, cardCvvCode)
-            }catch (e: Exception) {
-                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-                println(e.message)
+
+            lifecycleScope.launch {
+                try {
+                    try {
+                        responseCode = RegisterController.register(name, password, confirmPassword, cardNumber, cardHolderName, cardExpirationMonth,cardExpirationYear, cardCvvCode)
+                    }catch (e: Exception) {
+                        Log.e("Erro: ", e.toString())
+                    }
+                } catch (e: Exception) {
+                    // Handle network or server error
+                }
             }
+
+
 
             Toast.makeText(this, "Registered : " + responseCode, Toast.LENGTH_SHORT).show()
         }

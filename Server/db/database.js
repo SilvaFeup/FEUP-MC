@@ -7,10 +7,10 @@ const init = async () => {
 
   const db = await Database.open(path.resolve('./db/database.db'));
   // Read SQL file
-  const sql = fs.readFileSync(path.resolve('./db/tables.sql'), 'utf-8');
+  //const sql = fs.readFileSync(path.resolve('./db/tables.sql'), 'utf-8');
 
   // Run SQL commands
-  await db.exec(sql);
+  //await db.exec(sql);
 
   return db;
 };

@@ -1,13 +1,14 @@
 package fr.kodo.myapplication
 
-import fr.kodo.myapplication.model.User
+import fr.kodo.myapplication.network.RegisterRequest
+import fr.kodo.myapplication.network.RegisterResponse
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface APIInterface {
 
     @POST("register")
-    fun register(@Body user: User): Call<User>
+    suspend fun register(@Body registerRequest: RegisterRequest): RegisterResponse
 }
