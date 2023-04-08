@@ -1,5 +1,6 @@
 package fr.kodo.myapplication.controller
 
+
 import android.util.Log
 import fr.kodo.myapplication.APIInterface
 import fr.kodo.myapplication.network.RegisterRequest
@@ -30,7 +31,8 @@ class RegisterController {
         card_holder_name: String,
         expiration_month: Int,
         expiration_year: Int,
-        security_code: String
+        security_code: String,
+        public_key: String,
     ): Int {
         //if one of the fields is empty, return
         if (name.isEmpty() || passwordAuthentication.userName.isEmpty() || passwordAuthentication.password.isEmpty() || confirmPasswordAuthentication.password.isEmpty() || card_number.isEmpty() || card_holder_name.isEmpty() || security_code.isEmpty()) {
@@ -40,7 +42,8 @@ class RegisterController {
             throw Exception("Passwords do not match")
         }
 
-        val registerRequest = RegisterRequest(passwordAuthentication.userName,passwordAuthentication.password.toString(),name,card_number,card_holder_name, expiration_month,expiration_year, security_code,"");
+
+        val registerRequest = RegisterRequest(passwordAuthentication.userName,passwordAuthentication.password.toString(),name,card_number,card_holder_name, expiration_month,expiration_year, security_code,public_key);
 
         val registerInfo = apiInterface.register(registerRequest)
 

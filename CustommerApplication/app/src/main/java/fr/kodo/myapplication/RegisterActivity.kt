@@ -1,6 +1,8 @@
 package fr.kodo.myapplication
 
+import KeyStoreUtils
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -10,6 +12,8 @@ import fr.kodo.myapplication.controller.RegisterController
 import java.net.PasswordAuthentication
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import java.security.KeyPair
+
 
 class RegisterActivity : AppCompatActivity() {
     val RegisterController = RegisterController()
@@ -44,10 +48,23 @@ class RegisterActivity : AppCompatActivity() {
 
             var responseCode = -1
 
+            //generate key pair to store in android key store
+
+            KeyStoreUtils.generateKeyPair(nickname);
+
+            //retrieve public key
+
+            val keyPair = KeyStoreUtils.getKeyPair(nickname);
+
+
+
             lifecycleScope.launch {
                 try {
                     try {
-                        responseCode = RegisterController.register(name, password, confirmPassword, cardNumber, cardHolderName, cardExpirationMonth,cardExpirationYear, cardCvvCode)
+                        if (keyPair != null) {
+                            responseCode = RegisterController.register(name, password, confirmPassword, cardNumber, cardHolderName, cardExpirationMonth,cardExpirationYear, cardCvvCode,
+                                Base64.encodeToString(keyPair.public.encoded, Base64.DEFAULT))
+                        }
                     }catch (e: Exception) {
                         Log.e("Erro: ", e.toString())
                     }
@@ -55,6 +72,9 @@ class RegisterActivity : AppCompatActivity() {
                     // Handle network or server error
                 }
             }
+
+
+
 
 
 
