@@ -41,9 +41,7 @@ class KeyStoreUtils {
                 val publicKey: PublicKey = keyPair.public
                 val privateKey: PrivateKey = keyPair.private
 
-                // Print keys for testing
-                println("Public key: ${publicKey.encoded}")
-                println("Private key: ${privateKey.encoded}")
+
 
             } catch (e: NoSuchAlgorithmException) {
                 e.printStackTrace()
@@ -59,6 +57,8 @@ class KeyStoreUtils {
             keyStore.load(null)
             val privateKey = keyStore.getKey(key_alias, null) as? PrivateKey
             val publicKey = keyStore.getCertificate(key_alias)?.publicKey
+
+
             return if (privateKey != null && publicKey != null) {
                 KeyPair(publicKey, privateKey)
             } else {
@@ -79,5 +79,9 @@ class KeyStoreUtils {
             val publicKey = keyFactory.generatePublic(publicKeySpec)
             return publicKey
         }
+
+
+
+
     }
 }

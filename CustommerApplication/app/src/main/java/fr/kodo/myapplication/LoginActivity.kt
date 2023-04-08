@@ -3,11 +3,22 @@ package fr.kodo.myapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import fr.kodo.myapplication.controller.AuthController
+import kotlinx.coroutines.Dispatchers
+
+
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.PasswordAuthentication
 
 class LoginActivity : AppCompatActivity() {
+    val loginController = AuthController()
+
     val edtNickname by lazy { findViewById<EditText>(R.id.login_edt_nickname) }
     val edtPassword by lazy { findViewById<EditText>(R.id.login_edt_password) }
     val btnLogin by lazy { findViewById<Button>(R.id.login_bt_login) }
@@ -25,9 +36,10 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             else {
-                login(nickname, password)
+                loginUser(nickname,password)
             }
         }
+
 
         btnRegister.setOnClickListener {
             //Switch to RegisterActivity
@@ -36,9 +48,32 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    fun login(nickname: String, password: String) {
-        Toast.makeText(this, "Login$nickname:$password", Toast.LENGTH_SHORT).show()
-    }
+    fun loginUser(userName:String,password: String) {
 
+        var responseCode = -1;
+
+        lifecycleScope.launch {
+            try {
+
+                responseCode = loginController.login(userName,password)
+
+
+            } catch (e: Exception) {
+                // Handle network or server error
+            }
+
+            withContext(Dispatchers.Main){
+
+                if(responseCode == 1){
+                    //Switch to LoginActivity
+                    val intent = Intent(this@LoginActivity, WelcomeActivity::class.java)
+                    startActivity(intent)
+                }
+
+
+            }
+        }
+
+    }
 
 }
