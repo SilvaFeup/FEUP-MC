@@ -1,18 +1,26 @@
 package fr.kodo.myapplication
 
+import KeyStoreUtils
+import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import fr.kodo.myapplication.controller.RegisterController
+import fr.kodo.myapplication.controller.AuthController
 import java.net.PasswordAuthentication
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+
+
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 class RegisterActivity : AppCompatActivity() {
-    val RegisterController = RegisterController()
+    val RegisterController = AuthController()
 
     val edtName by lazy { findViewById<EditText>(R.id.register_edt_name) }
     val edtNickname by lazy { findViewById<EditText>(R.id.register_edt_nickname) }
@@ -34,8 +42,8 @@ class RegisterActivity : AppCompatActivity() {
         btRegister.setOnClickListener{
             val name = edtName.text.toString()
             val nickname = edtNickname.text.toString()
-            val password = PasswordAuthentication(nickname, edtPassword.text.toString().toCharArray())
-            val confirmPassword = PasswordAuthentication(nickname, edtConfirmPassword.text.toString().toCharArray())
+            val password = edtPassword.text.toString()
+            val confirmPassword = edtConfirmPassword.text.toString()
             val cardNumber = edtCardNumber.text.toString()
             val cardHolderName = edtCardHolderName.text.toString()
             val cardExpirationMonth = edtCardExpirationMonth.text.toString().toInt();
@@ -44,21 +52,47 @@ class RegisterActivity : AppCompatActivity() {
 
             var responseCode = -1
 
+
+
+            //generate key pair to store in android key store
+
+            KeyStoreUtils.generateKeyPair(nickname);
+
+            //retrieve public key
+
+            val keyPair = KeyStoreUtils.getKeyPair(nickname);
+
+
+
             lifecycleScope.launch {
                 try {
                     try {
-                        responseCode = RegisterController.register(name, password, confirmPassword, cardNumber, cardHolderName, cardExpirationMonth,cardExpirationYear, cardCvvCode)
+                        if (keyPair != null) {
+                            responseCode = RegisterController.register(name,nickname, password, confirmPassword, cardNumber, cardHolderName, cardExpirationMonth,cardExpirationYear, cardCvvCode,
+                                Base64.encodeToString(keyPair.public.encoded, Base64.DEFAULT))
+                        }
                     }catch (e: Exception) {
                         Log.e("Erro: ", e.toString())
                     }
                 } catch (e: Exception) {
                     // Handle network or server error
                 }
+
+                withContext(Dispatchers.Main){
+
+
+
+                    if(responseCode == 1){
+                        //Switch to LoginActivity
+                        val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+                        startActivity(intent)
+                    }
+
+
+                }
             }
 
 
-
-            Toast.makeText(this, "Registered : " + responseCode, Toast.LENGTH_SHORT).show()
         }
     }
 }

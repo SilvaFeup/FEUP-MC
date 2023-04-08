@@ -24,7 +24,7 @@ router.post('/register', async (ctx,next) => {
     const userExists = await db.get('SELECT * FROM User WHERE username = ?', username);
     if (userExists) {
         ctx.status = 409;
-        ctx.body = 'username already registered';
+        ctx.body = { message: 'User already exists'};
         return;
     }
 
@@ -98,7 +98,7 @@ router.post('/login', async (ctx, next) => {
     const user = await db.get('SELECT * FROM User WHERE username = ?', username);
     if (!user) {
       ctx.status = 401;
-      ctx.body = 'username or password is incorrect';
+      ctx.body = { message: 'username or password is incorrect'};
       return;
     }
 
@@ -106,12 +106,12 @@ router.post('/login', async (ctx, next) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       ctx.status = 401;
-      ctx.body = 'username or password is incorrect';
+      ctx.body = { message: 'username or password is incorrect'};
       return;
     }
 
     ctx.status = 200;
-    ctx.body = 'Login successful';
+    ctx.body = { message: 'User logged in successfully'};
   } catch (err) {
     // Handle errors
   }
