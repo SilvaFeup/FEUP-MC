@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.kodo.myapplication.controller.ShoppingBasketAdapter
@@ -44,20 +45,14 @@ class WelcomeActivity : AppCompatActivity() {
         for (product in shoppingBasket) {
             totalPrice += product.price * product.quantity
         }
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Checkout")
-        builder.setMessage("Total price: $totalPrice")
-        builder.setPositiveButton("OK") { dialog, which ->
-            val nbProducts = shoppingBasket.size
-            shoppingBasket.clear()
-            shoppingBasketView.adapter?.notifyItemRangeRemoved(0, nbProducts)
-            val intent = Intent(this, QRCodeActivity::class.java)
-            val message = "" //TODO: get the message from the QRCode
-            intent.putExtra("message",message)
-            startActivity(intent)
-        }
-        builder.setNegativeButton("Cancel") { dialog, which -> }
-        builder.show()
+        val message = "" //TODO: get the message from the QRCode
+        //Start OrderInfoFragment
+        val orderInfoFragment = OrderInfoFragment.newInstance(message, "")
+        orderInfoFragment.show(supportFragmentManager, "test")
+
+        val nbProducts = shoppingBasket.size
+        shoppingBasket.clear()
+        shoppingBasketView.adapter?.notifyItemRangeRemoved(0, nbProducts)
     }
 
 
