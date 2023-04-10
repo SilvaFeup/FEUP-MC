@@ -20,12 +20,13 @@
         android:layout_weight="1"
         android:text="Quantity:" />
 
-    <TextView
+    <EditText
         android:id="@+id/shopping_basket_product_quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="1" />
+        android:text="2"
+        android:inputType="number"/>
 
     <TextView
         android:layout_width="wrap_content"

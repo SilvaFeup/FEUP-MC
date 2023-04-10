@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.kodo.myapplication.controller.ShoppingBasketAdapter
 import fr.kodo.myapplication.model.Product
+import fr.kodo.myapplication.controller.scan
 
 private const val ACTION_SCAN = "com.google.zxing.client.android.SCAN"
 class WelcomeActivity : AppCompatActivity() {
@@ -31,33 +32,9 @@ class WelcomeActivity : AppCompatActivity() {
         shoppingBasketView.adapter = ShoppingBasketAdapter(shoppingBasket)
         shoppingBasketView.layoutManager = LinearLayoutManager(this)
 
-        btAddProduct.setOnClickListener { scan() }
+        btAddProduct.setOnClickListener { scan(this) }
     }
 
-
-    private fun showDialog(act: Activity, title: CharSequence, message: CharSequence, buttonYes: CharSequence, buttonNo: CharSequence): AlertDialog {
-        val downloadDialog = AlertDialog.Builder(act)
-        downloadDialog.setTitle(title)
-        downloadDialog.setMessage(message)
-        downloadDialog.setPositiveButton(buttonYes) { _, _ ->
-            val uri = Uri.parse("market://search?q=pname:com.google.zxing.client.android")
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            act.startActivity(intent)
-        }
-        downloadDialog.setNegativeButton(buttonNo, null)
-        return downloadDialog.create()
-    }
-
-    private fun scan(){
-        try {
-            val intent = Intent(ACTION_SCAN).apply {
-                putExtra("SCAN_MOD", "QR_CODE_MODE")}
-            startActivityForResult(intent,0)
-        }
-        catch (e: ActivityNotFoundException){
-            showDialog(this, "No Scanner Found", "Download a scanner code app?", "Yes", "No").show()
-        }
-    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 0){

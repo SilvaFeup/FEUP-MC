@@ -14,7 +14,8 @@ class AuthController {
 
     val apiInterface: APIInterface by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.1.80:3000/")
+            .baseUrl("http://192.168.1.81:3000/")//Axel
+            //.baseUrl("http://192.168.1.80:3000/")//aurélien
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(APIInterface::class.java)
