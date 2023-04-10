@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import fr.kodo.myapplication.controller.ShoppingBasketAdapter
 import fr.kodo.myapplication.model.Product
 import fr.kodo.myapplication.controller.scan
+import java.util.*
+import kotlin.collections.ArrayList
 
 private const val ACTION_SCAN = "com.google.zxing.client.android.SCAN"
 class WelcomeActivity : AppCompatActivity() {
@@ -33,7 +35,32 @@ class WelcomeActivity : AppCompatActivity() {
         shoppingBasketView.layoutManager = LinearLayoutManager(this)
 
         btAddProduct.setOnClickListener { scan(this) }
+        btCheckout.setOnClickListener { checkout() }
     }
+
+
+    private fun checkout() {
+        var totalPrice = 0.0
+        for (product in shoppingBasket) {
+            totalPrice += product.price * product.quantity
+        }
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Checkout")
+        builder.setMessage("Total price: $totalPrice")
+        builder.setPositiveButton("OK") { dialog, which ->
+            val nbProducts = shoppingBasket.size
+            shoppingBasket.clear()
+            shoppingBasketView.adapter?.notifyItemRangeRemoved(0, nbProducts)
+            val intent = Intent(this, QRCodeActivity::class.java)
+            val message = "" //TODO: get the message from the QRCode
+            intent.putExtra("message",message)
+            startActivity(intent)
+        }
+        builder.setNegativeButton("Cancel") { dialog, which -> }
+        builder.show()
+    }
+
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -46,8 +73,8 @@ class WelcomeActivity : AppCompatActivity() {
 
                     shoppingBasket.add(
                         Product(
-                            shoppingBasket.size,
-                            result[0].toString(),
+                            UUID.randomUUID(),//TODO: get the id from the QRCode
+                            result[0],
                             result[1].toDouble(),
                             1
                         )

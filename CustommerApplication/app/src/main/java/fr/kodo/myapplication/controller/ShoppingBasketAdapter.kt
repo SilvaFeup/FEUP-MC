@@ -1,5 +1,7 @@
 package fr.kodo.myapplication.controller
 
+import android.app.AlertDialog
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,12 +24,19 @@ class ShoppingBasketAdapter(private val shoppingBasket: ArrayList<Product>) : Re
     override fun onBindViewHolder(holder: ShoppingBasketViewHolder, position: Int) {
         val product = shoppingBasket[position]
         holder.name.text = product.name
-        holder.price.text = product.price.toString()
+        holder.price.text = product.price.toString() + "€"
         holder.quantity.setText(product.quantity.toString())
-        holder.totalPrice.text = (product.price * product.quantity).toString()
+        holder.totalPrice.text = (product.price * product.quantity).toString() + "€"
         holder.deleteBt.setOnClickListener {
-            shoppingBasket.remove(product)
-            notifyItemRemoved(position)
+            val builder = AlertDialog.Builder(holder.itemView.context)
+            builder.setTitle("Delete product")
+            builder.setMessage("Are you sure you want to delete this product?")
+            builder.setPositiveButton("OK") { dialog, which ->
+                shoppingBasket.remove(product)
+                notifyItemRemoved(position)
+            }
+            builder.setNegativeButton("Cancel") { dialog, which -> }
+            builder.show()
         }
         holder.quantity.setOnKeyListener { _, _, _ ->
             if (holder.quantity.text.toString() != "") {
