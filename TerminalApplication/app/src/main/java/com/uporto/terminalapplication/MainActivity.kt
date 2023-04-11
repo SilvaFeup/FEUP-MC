@@ -55,7 +55,6 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == RESULT_OK){
                 val resultIntent = Intent(this, result_activity::class.java)
                 resultIntent.putExtra("result",data?.getStringExtra("SCAN_RESULT")?:"")
-                //resultIntent.getStringExtra("SCAN_RESULT_FORMAT")?:""
                 startActivity(resultIntent)
             }
         }
