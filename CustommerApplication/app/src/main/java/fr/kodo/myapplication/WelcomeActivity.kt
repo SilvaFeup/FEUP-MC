@@ -13,9 +13,11 @@ import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import fr.kodo.myapplication.controller.AuthController
 import fr.kodo.myapplication.controller.ShoppingBasketAdapter
 import fr.kodo.myapplication.model.Product
 import fr.kodo.myapplication.controller.scan
+import fr.kodo.myapplication.model.Session
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -27,6 +29,8 @@ class WelcomeActivity : AppCompatActivity() {
     val btAddProduct by lazy { findViewById<Button>(R.id.welcome_bt_add_product) }
     val btCheckout by lazy { findViewById<Button>(R.id.welcome_bt_checkout) }
     val btLogout by lazy { findViewById<Button>(R.id.welcome_bt_logout) }
+
+    val session by lazy{ Session(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,10 +49,19 @@ class WelcomeActivity : AppCompatActivity() {
         for (product in shoppingBasket) {
             totalPrice += product.price * product.quantity
         }
-        val message = "" //TODO: get the message from the QRCode
+        var message = ""
+        for (product in shoppingBasket) {
+            message += "${product.name} x${product.quantity} = ${product.price * product.quantity}€"
+        }
+
         //Start OrderInfoFragment
-        val orderInfoFragment = OrderInfoFragment.newInstance(message, "")
-        orderInfoFragment.show(supportFragmentManager, "test")
+        val orderInfoFragment = OrderInfoFragment()
+        orderInfoFragment.arguments = Bundle().apply {
+            putString("message", message)
+            putDouble("totalPrice", totalPrice)
+            putString("userUUID", session.getUserUUID())
+        }
+        orderInfoFragment.show(supportFragmentManager, "OrderInfoFragment")
 
         val nbProducts = shoppingBasket.size
         shoppingBasket.clear()

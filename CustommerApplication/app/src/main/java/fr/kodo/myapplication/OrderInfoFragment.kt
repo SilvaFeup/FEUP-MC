@@ -1,60 +1,37 @@
 package fr.kodo.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.DialogFragment
+import fr.kodo.myapplication.model.Product
+import java.util.UUID
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_MESSAGE = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [OrderInfoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class OrderInfoFragment : DialogFragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_MESSAGE)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+class OrderInfoFragment: DialogFragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_order_info, container, false)
-    }
+        var view : View = inflater.inflate(R.layout.fragment_order_info, container, false)
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment OrderInfoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            OrderInfoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_MESSAGE, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        view.findViewById<Button>(R.id.order_info_cancel_button).setOnClickListener {
+            dismiss()
+        }
+
+        view.findViewById<Button>(R.id.order_info_confirm_button).setOnClickListener {
+            arguments?.let {
+                val message = it.getString("message")
+                val totalPrice = it.getDouble("totalPrice")
+                val userUUID = it.getString("userUUID")
+
+                Log.println(Log.WARN, "OrderInfoFragment", "message: $message totalPrice: $totalPrice userUUID: $userUUID")
+
             }
+        }
+
+        return view
     }
 }

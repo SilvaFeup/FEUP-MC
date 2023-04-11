@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import fr.kodo.myapplication.controller.AuthController
+import fr.kodo.myapplication.model.Session
 import kotlinx.coroutines.Dispatchers
 
 
@@ -23,6 +24,8 @@ class LoginActivity : AppCompatActivity() {
     val edtPassword by lazy { findViewById<EditText>(R.id.login_edt_password) }
     val btnLogin by lazy { findViewById<Button>(R.id.login_bt_login) }
     val btnRegister by lazy { findViewById<Button>(R.id.login_bt_register) }
+
+    val session by lazy { Session(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -54,26 +57,20 @@ class LoginActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-
-                responseCode = loginController.login(userName,password)
-
-
+                responseCode = loginController.login(userName,password, this@LoginActivity)
             } catch (e: Exception) {
                 // Handle network or server error
+                Log.println(Log.ERROR,"Error",e.stackTraceToString())
             }
 
             withContext(Dispatchers.Main){
-
+                Log.println(Log.INFO,"Response Code",responseCode.toString())
                 if(responseCode == 1){
                     //Switch to LoginActivity
                     val intent = Intent(this@LoginActivity, WelcomeActivity::class.java)
                     startActivity(intent)
                 }
-
-
             }
         }
-
     }
-
 }

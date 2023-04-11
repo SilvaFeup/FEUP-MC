@@ -55,9 +55,9 @@ router.post('/register', async (ctx,next) => {
           throw new Error('Failed to register user');
       }
     
-      // Return a success response with the UUID in the body
+      // Return a success response
       ctx.status = 200;
-      ctx.body = { message: 'User registered successfully', userId: unique_id,  supermarket_publickey: publicKey};
+      ctx.body = { message: 'User registered successfully'};
 
     
   } catch (err) {
@@ -111,7 +111,8 @@ router.post('/login', async (ctx, next) => {
     }
 
     ctx.status = 200;
-    ctx.body = { message: 'User logged in successfully'};
+    ctx.body = { message: 'User logged in successfully', userId: user.uuid, supermarket_publickey: publicKey };
+    console.log(user.uuid);
   } catch (err) {
     // Handle errors
   }
