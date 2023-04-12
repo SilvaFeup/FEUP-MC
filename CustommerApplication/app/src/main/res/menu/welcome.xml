@@ -3,15 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:icon="@drawable/baseline_discount_24"
+        android:id="@+id/menu_welcome_see_vouchers"
         android:title="@string/see_vouchers"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
-        android:icon="@drawable/baseline_list_24"
+        android:id="@+id/menu_welcome_see_transactions"
         android:title="@string/see_transactions"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
-        android:icon="@drawable/baseline_shopping_cart_24"
-        android:title="@string/see_shopping_cart"
-        app:showAsAction="ifRoom"></item>
+        android:id="@+id/menu_welcome_logout"
+        android:icon="@drawable/baseline_logout_24"
+        android:title="@string/logout"
+        app:showAsAction="ifRoom"/>
 </menu>

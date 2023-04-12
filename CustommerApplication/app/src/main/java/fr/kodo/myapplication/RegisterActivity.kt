@@ -7,6 +7,7 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import fr.kodo.myapplication.controller.AuthController
@@ -33,6 +34,8 @@ class RegisterActivity : AppCompatActivity() {
     val edtCardExpirationYear by lazy { findViewById<EditText>(R.id.register_edt_card_expiration_year) }
     val edtCardSecurityCode by lazy { findViewById<EditText>(R.id.register_edt_card_security_code) }
 
+    val progressBar by lazy { findViewById<ProgressBar>(R.id.register_progress_bar) }
+
     val btRegister by lazy { findViewById<Button>(R.id.register_bt_register) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,53 +49,36 @@ class RegisterActivity : AppCompatActivity() {
             val confirmPassword = edtConfirmPassword.text.toString()
             val cardNumber = edtCardNumber.text.toString()
             val cardHolderName = edtCardHolderName.text.toString()
-            val cardExpirationMonth = edtCardExpirationMonth.text.toString().toInt();
-            val cardExpirationYear = edtCardExpirationYear.text.toString().toInt();
+            val cardExpirationMonth = edtCardExpirationMonth.text.toString()
+            val cardExpirationYear = edtCardExpirationYear.text.toString()
             val cardCvvCode = edtCardSecurityCode.text.toString()
 
             var responseCode = -1
 
-
-
-            //generate key pair to store in android key store
-
-            KeyStoreUtils.generateKeyPair(nickname);
-
-            //retrieve public key
-
-            val keyPair = KeyStoreUtils.getKeyPair(nickname);
-
-
+            progressBar.visibility = ProgressBar.VISIBLE
+            btRegister.isEnabled = false
 
             lifecycleScope.launch {
                 try {
-                    try {
-                        if (keyPair != null) {
-                            responseCode = RegisterController.register(name,nickname, password, confirmPassword, cardNumber, cardHolderName, cardExpirationMonth,cardExpirationYear, cardCvvCode,
-                                Base64.encodeToString(keyPair.public.encoded, Base64.DEFAULT))
-                        }
-                    }catch (e: Exception) {
-                        Log.e("Erro: ", e.toString())
-                    }
-                } catch (e: Exception) {
-                    // Handle network or server error
+                    responseCode = RegisterController.register(name,nickname, password, confirmPassword,
+                        cardNumber, cardHolderName, cardExpirationMonth,cardExpirationYear, cardCvvCode)
+
+                }catch (e: Exception) {
+                    Log.e("Erro: ", e.stackTraceToString())
+                    Toast.makeText(this@RegisterActivity, e.message, Toast.LENGTH_LONG).show()
                 }
 
                 withContext(Dispatchers.Main){
-
-
-
                     if(responseCode == 1){
                         //Switch to LoginActivity
                         val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
                         startActivity(intent)
                     }
 
-
+                    progressBar.visibility = ProgressBar.GONE
+                    btRegister.isEnabled = true
                 }
             }
-
-
         }
     }
 }

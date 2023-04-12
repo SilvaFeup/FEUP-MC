@@ -55,9 +55,9 @@ router.post('/register', async (ctx,next) => {
           throw new Error('Failed to register user');
       }
     
-      // Return a success response with the UUID in the body
+      // Return a success response
       ctx.status = 200;
-      ctx.body = { message: 'User registered successfully', userId: unique_id,  supermarket_publickey: publicKey};
+      ctx.body = { message: 'User registered successfully'};
 
     
   } catch (err) {
@@ -84,11 +84,6 @@ router.get('/users', async (ctx, next) => {
 });
 
 
-
-
-
-
-
 router.post('/login', async (ctx, next) => {
   try {
     const db = await init();
@@ -111,13 +106,56 @@ router.post('/login', async (ctx, next) => {
     }
 
     ctx.status = 200;
-    ctx.body = { message: 'User logged in successfully'};
+    ctx.body = { message: 'User logged in successfully', userId: user.uuid, supermarket_publickey: publicKey };
+    console.log(user.uuid);
   } catch (err) {
     // Handle errors
   }
 });
 
 
+router.post('/checkout', async(ctx,next) => {
+  var missingProduct = false;
+  try{
+    const db = await init();
+    const { idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId } = ctx.request.body;
+
+    //find all products
+    var dataBaseProducts = [];  //List of all products in the data base
+    dataBaseProducts = await db.all('SELECT * FROM Product' );
+
+    var productsInBasket = [];  //List that will be completed with the database products that are in the basket
+
+      //check if all products in the basket exist in the data base
+      for (let i = 0; i < idProductList.length; i++) {
+        var productFound = null;
+
+        dataBaseProducts.forEach( DBproduct=> {
+          if(DBproduct.id == idProductList[i]){ 
+            productFound = DBproduct;
+          }
+        })
+
+        if(!productFound){
+          
+          ctx.body = {message: 'One of the products does not exist in our supermarket'};
+          missingProduct=true;
+        }
+        productsInBasket.push(productFound);
+      }
+
+      
+
+    if(!missingProduct){
+      ctx.status = 200;
+      ctx.body = {message: 'Checkout valid'};
+    }
+
+  }catch(err){
+    //Handle errors
+    console.log(err.stack)
+  }
+});
 
 module.exports = router;
 
