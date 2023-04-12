@@ -21,6 +21,13 @@ class CheckoutQRCodeFragment: DialogFragment() {
             Generate_QR_Code(arguments?.getString("message") ?: ""))
 
         view.findViewById<Button>(R.id.checkout_qr_code_bt_done).setOnClickListener {
+            parentFragmentManager.setFragmentResult("checkout", Bundle().apply {
+                putString("checkout", "success")
+            })
+            dismiss()
+        }
+
+        view.findViewById<Button>(R.id.checkout_qr_code_bt_cancel).setOnClickListener{
             dismiss()
         }
 

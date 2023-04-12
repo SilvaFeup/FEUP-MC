@@ -2,6 +2,7 @@ package fr.kodo.myapplication.controller
 
 
 import android.content.Context
+import android.util.Base64
 import android.util.Log
 import fr.kodo.myapplication.APIInterface
 import fr.kodo.myapplication.model.Session
@@ -15,8 +16,8 @@ class AuthController {
 
     val apiInterface: APIInterface by lazy {
         Retrofit.Builder()
-            //.baseUrl("http://192.168.1.81:3000/")//Axel
-            .baseUrl("http://10.0.2.2:3000/")//emulator
+            .baseUrl("http://192.168.1.81:3000/")//Axel
+            //.baseUrl("http://10.0.2.2:3000/")//emulator
             //.baseUrl("http://192.168.1.80:3000/")//aurélien
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -30,10 +31,9 @@ class AuthController {
         confirmPasswordAuthentication: String,
         card_number: String,
         card_holder_name: String,
-        expiration_month: Int,
-        expiration_year: Int,
-        security_code: String,
-        public_key: String,
+        expiration_month: String,
+        expiration_year: String,
+        security_code: String
     ): Int {
         //if one of the fields is empty, return
         if (name.isEmpty() || userName.isEmpty() || passwordAuthentication.isEmpty() || confirmPasswordAuthentication.isEmpty() || card_number.isEmpty() || card_holder_name.isEmpty() || security_code.isEmpty()) {
@@ -43,7 +43,11 @@ class AuthController {
             throw Exception("Passwords do not match")
         }
 
-        val registerRequest = RegisterRequest(userName,passwordAuthentication,name,card_number,card_holder_name, expiration_month,expiration_year, security_code,public_key);
+        KeyStoreUtils.generateKeyPair(userName);
+
+        val public_key = KeyStoreUtils.getKeyPair(userName);
+
+        val registerRequest = RegisterRequest(userName,passwordAuthentication,name,card_number,card_holder_name, expiration_month.toInt(),expiration_year.toInt(), security_code, Base64.encodeToString(public_key?.public?.encoded, Base64.DEFAULT));
 
         val registerInfo = apiInterface.register(registerRequest)
 
@@ -52,10 +56,7 @@ class AuthController {
         if(registerInfo.message.contentEquals("User registered successfully")){
             return 1;
         }
-
-
         return -1;
-
     }
 
 
@@ -67,22 +68,13 @@ class AuthController {
             throw Exception("All fields must be filled")
         }
 
-
         val loginRequest = LoginRequest(userName,passwordAuthentication)
         val loginInfo = apiInterface.login(loginRequest)
-
-        //Log.e("Login Info: ", loginInfo.message);
-
-        //login Info has (message)
-        Log.e("Login Info: ", loginInfo.message)
-        Log.e("Login Info: ", loginInfo.userId)
 
         if(loginInfo.message.contentEquals("User logged in successfully")){
             session.createSession(loginInfo.userId, loginInfo.supermarket_publickey)
             return 1;
         }
-
-
         return -1;
     }
 }

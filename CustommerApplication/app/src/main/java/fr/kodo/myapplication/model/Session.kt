@@ -36,5 +36,14 @@ class Session {
         return prefs.getString(KEY_SUPERMARKET_PUBLIC_KEY, null)
     }
 
+    fun logout() {
+        editor.clear()
+        editor.commit()
+    }
+
+    fun isLoggedIn(): Boolean {
+        return prefs.getString(KEY_USER_UUID, null) != null
+    }
+
 
 }

@@ -45,7 +45,11 @@ class OrderInfoFragment: DialogFragment() {
                 checkoutQRCodeFragment.arguments = Bundle().apply {
                     putString("message", newMessage)
                 }
+
                 checkoutQRCodeFragment.show(parentFragmentManager, "CheckoutQRCodeFragment")
+
+                dismiss()
+
             }
         }
 

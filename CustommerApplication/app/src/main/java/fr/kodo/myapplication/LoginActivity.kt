@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import fr.kodo.myapplication.controller.AuthController
@@ -15,15 +16,16 @@ import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.net.PasswordAuthentication
 
 class LoginActivity : AppCompatActivity() {
-    val loginController = AuthController()
+    val authController = AuthController()
 
     val edtNickname by lazy { findViewById<EditText>(R.id.login_edt_nickname) }
     val edtPassword by lazy { findViewById<EditText>(R.id.login_edt_password) }
     val btnLogin by lazy { findViewById<Button>(R.id.login_bt_login) }
     val btnRegister by lazy { findViewById<Button>(R.id.login_bt_register) }
+
+    val progressBar: ProgressBar by lazy { findViewById(R.id.login_progress_bar) }
 
     val session by lazy { Session(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,12 +37,10 @@ class LoginActivity : AppCompatActivity() {
         btnLogin.setOnClickListener {
             val nickname = edtNickname.text.toString()
             val password = edtPassword.text.toString()
-            if (nickname.isEmpty() || password.isEmpty()) {
-                return@setOnClickListener
-            }
-            else {
-                loginUser(nickname,password)
-            }
+
+            progressBar.visibility = ProgressBar.VISIBLE
+            btnLogin.isEnabled = false
+            loginUser(nickname,password)
         }
 
 
@@ -52,15 +52,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun loginUser(userName:String,password: String) {
-
         var responseCode = -1;
 
         lifecycleScope.launch {
             try {
-                responseCode = loginController.login(userName,password, this@LoginActivity)
+                responseCode = authController.login(userName,password, this@LoginActivity)
             } catch (e: Exception) {
                 // Handle network or server error
                 Log.println(Log.ERROR,"Error",e.stackTraceToString())
+                Toast.makeText(this@LoginActivity, "${e.message}", Toast.LENGTH_LONG).show()
             }
 
             withContext(Dispatchers.Main){
@@ -70,6 +70,8 @@ class LoginActivity : AppCompatActivity() {
                     val intent = Intent(this@LoginActivity, WelcomeActivity::class.java)
                     startActivity(intent)
                 }
+                progressBar.visibility = ProgressBar.GONE
+                btnLogin.isEnabled = true
             }
         }
     }

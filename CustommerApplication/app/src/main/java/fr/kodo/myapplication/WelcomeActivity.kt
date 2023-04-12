@@ -3,6 +3,9 @@ package fr.kodo.myapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +38,25 @@ class WelcomeActivity : AppCompatActivity() {
         btCheckout.setOnClickListener { checkout() }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.welcome, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_welcome_logout){
+            session.logout()
+            finish()
+        }
+        if (item.itemId == R.id.menu_welcome_see_transactions){
+            //TODO
+        }
+        if (item.itemId == R.id.menu_welcome_see_vouchers){
+            //TODO
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 
     private fun checkout() {
         var totalPrice = 0.0
@@ -56,9 +78,17 @@ class WelcomeActivity : AppCompatActivity() {
         }
         orderInfoFragment.show(supportFragmentManager, "OrderInfoFragment")
 
-        val nbProducts = shoppingBasket.size
-        shoppingBasket.clear()
-        shoppingBasketView.adapter?.notifyItemRangeRemoved(0, nbProducts)
+        supportFragmentManager.setFragmentResultListener("checkout", this) { key, bundle ->
+            val result = bundle.getString("checkout")
+            if (result == "success") {
+                val nbProducts = shoppingBasket.size
+                shoppingBasket.clear()
+                shoppingBasketView.adapter?.notifyItemRangeRemoved(0, nbProducts)
+            }
+            else{
+                Log.println(Log.ERROR, "WelcomeActivity", result?:"")
+            }
+        }
     }
 
 
