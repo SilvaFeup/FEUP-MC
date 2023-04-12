@@ -1,19 +1,11 @@
 package fr.kodo.myapplication
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.AlertDialog
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import fr.kodo.myapplication.controller.AuthController
 import fr.kodo.myapplication.controller.ShoppingBasketAdapter
 import fr.kodo.myapplication.model.Product
 import fr.kodo.myapplication.controller.scan
@@ -34,7 +26,7 @@ class WelcomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.welcome)
+        setContentView(R.layout.activity_welcome)
 
         shoppingBasketView.adapter = ShoppingBasketAdapter(shoppingBasket)
         shoppingBasketView.layoutManager = LinearLayoutManager(this)
@@ -49,9 +41,10 @@ class WelcomeActivity : AppCompatActivity() {
         for (product in shoppingBasket) {
             totalPrice += product.price * product.quantity
         }
+        //message is formatted as "id,quantity,id,quantity..."
         var message = ""
         for (product in shoppingBasket) {
-            message += "${product.name} x${product.quantity} = ${product.price * product.quantity}€"
+            message += "${product.id},${product.quantity},"
         }
 
         //Start OrderInfoFragment
