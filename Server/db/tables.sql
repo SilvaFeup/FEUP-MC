@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS Qrcode;
 
 CREATE TABLE User (
 
-    id INTEGER PRIMARY KEY,
+    id VARCHAR(255) PRIMARY KEY,
     uuid INTEGER NOT NULL UNIQUE,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE User (
 );
 
 CREATE TABLE Product (
-    id INTEGER PRIMARY KEY,
+    id VARCHAR(255) PRIMARY KEY,
     name TEXT NOT NULL,
     price_tag FLOAT NOT NULL,
     qr_code_id INTEGER REFERENCES Qrcode(id)
