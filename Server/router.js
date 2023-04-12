@@ -124,6 +124,7 @@ router.post('/checkout', async(ctx,next) => {
     var dataBaseProducts = [];  //List of all products in the data base
     dataBaseProducts = await db.all('SELECT * FROM Product' );
 
+    console.log(dataBaseProducts)
     var productsInBasket = [];  //List that will be completed with the database products that are in the basket
 
       //check if all products in the basket exist in the data base
@@ -131,7 +132,7 @@ router.post('/checkout', async(ctx,next) => {
         var productFound = null;
 
         dataBaseProducts.forEach( DBproduct=> {
-          if(DBproduct.id == idProductList[i]){ 
+          if(DBproduct.uuid == idProductList[i]){ 
             productFound = DBproduct;
           }
         })
