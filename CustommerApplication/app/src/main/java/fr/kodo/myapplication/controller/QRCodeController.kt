@@ -29,13 +29,13 @@ fun Generate_QR_Code(message: String): Bitmap?{
 
     val w = result.width
     val h = result.height
-    val colorDark = R.color.black
-    val colorLight = R.color.white
+    val colorDark = 0x000000
+    val colorLight = 0xFFFFFF
     val pixels = IntArray(w * h)
     for (line in 0 until h) {
         val offset = line * w
         for (col in 0 until w)
             pixels[offset + col] = if (result.get(col, line)) colorDark else colorLight
     }
-    return Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply { setPixels(pixels, 0, w, 0, 0, w, h) }
+    return Bitmap.createBitmap(w, h, Bitmap.Config.RGB_565).apply { setPixels(pixels, 0, w, 0, 0, w, h) }
 }

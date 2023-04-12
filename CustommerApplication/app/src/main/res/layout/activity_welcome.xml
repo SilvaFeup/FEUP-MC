@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTint="@color/blue"
-            android:text="Add Product"
+            android:text="@string/add_product"
             android:textColor="@color/black" />
 
         <Button
@@ -41,16 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTint="@color/blue"
-            android:text="Go to Checkout"
-            android:textColor="@color/black" />
-
-        <Button
-            android:id="@+id/welcome_bt_logout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:backgroundTint="@color/blue"
-            android:text="Logout"
+            android:text="@string/checkout"
             android:textColor="@color/black" />
 
     </LinearLayout>
