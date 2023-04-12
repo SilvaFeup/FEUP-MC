@@ -18,6 +18,7 @@ CREATE TABLE User (
     password TEXT NOT NULL,
     name TEXT NOT NULL,
     public_key TEXT NOT NULL,
+    accumulated_discount FLOAT DEFAULT 0.0,
     payment_card INTEGER REFERENCES PaymentCard(id)
 
 );
@@ -52,7 +53,7 @@ CREATE TABLE OrderInfo (
     id INTEGER PRIMARY KEY,
     total_amount DECIMAL(10,2),
     customer_id INT REFERENCES User(id),
-    voucher TEXT DEFAULT '0',
+    voucher_id INT REFERENCES Voucher(id) DEFAULT -1,
     date_order DATE DEFAULT CURRENT_DATE
 
 
@@ -84,6 +85,11 @@ CREATE TABLE Qrcode (
   qr_code_data VARCHAR(255)
 );
 
+
+CREATE TABLE Voucher(
+    id INT AUTOINCREMENT PRIMARY KEY,
+    code VARCHAR(255) NOT NULL UNIQUE
+);
 
 
 
