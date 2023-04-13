@@ -95,8 +95,12 @@ class MainActivity : AppCompatActivity() {
 
             var intent = Intent(this@MainActivity,result_activity::class.java)
 
-            if(responseCode!=0){ intent.putExtra("valid","true")}
-            else{ intent.putExtra("valid","false")}
+            if(responseCode[0]>=0f){
+                intent.putExtra("valid",true)
+                intent.putExtra("total",responseCode[0])
+                intent.putExtra("discount",responseCode[1])
+            }
+            else{ intent.putExtra("valid",false)}
 
             startActivity(intent)
         }

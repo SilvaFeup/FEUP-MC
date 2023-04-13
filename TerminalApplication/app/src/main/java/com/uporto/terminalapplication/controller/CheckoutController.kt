@@ -13,7 +13,7 @@ class CheckoutController {
         Retrofit.Builder()
             //.baseUrl("http://192.168.1.81:3000/")//Axel
             //.baseUrl("http://192.168.1.80:3000/")//aurélien
-            .baseUrl("http://192.168.250.163:3000/")//aurélien with his own connexion
+            .baseUrl("http://192.168.143.163:3000/")//aurélien with his own connexion
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(APIInterface::class.java)
@@ -25,7 +25,7 @@ class CheckoutController {
         userId: UUID,
         useAccumulatedDiscount: Float,
         voucherId: Int
-    ): Int {
+    ): ArrayList<Float> {
         //if one of the fields is empty, return
         if (idProductList.isEmpty() || productQuantityList.isEmpty()) {
             throw Exception("All fields must be filled")
@@ -41,9 +41,13 @@ class CheckoutController {
         val checkoutInfo = apiInterface.checkout(checkoutRequest)
         Log.e("Checkout info: ", checkoutInfo.message)
 
+        var result = ArrayList<Float>()
         if (checkoutInfo.message.contentEquals("Checkout valid")) {
-            return 1
+            result.add(checkoutInfo.total)
+            result.add(checkoutInfo.discount)
         }
-        return 0
+        else result.add(-1f)
+
+        return result
     }
 }

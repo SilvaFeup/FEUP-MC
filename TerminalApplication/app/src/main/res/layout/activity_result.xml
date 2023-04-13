@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,55 +8,80 @@
     android:orientation="vertical"
     tools:context=".result_activity">
 
-    <TextView
-        android:id="@+id/result_tv_outcome"
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="128dp"
-        android:layout_marginLeft="64dp"
-        android:layout_marginRight="64dp"
-        android:gravity="center"
-        android:text="result_text"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        />
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp">
 
-    <TextView
-        android:id="@+id/result_tv_doorMessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="128dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
-        android:gravity="center"
-        android:text="gate_opens_or_not"
-        android:textSize="20sp"/>
+        <TextView
+            android:id="@+id/result_tv_outcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="128dp"
+            android:layout_marginRight="64dp"
+            android:gravity="center"
+            android:text="result_text"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/result_tv_total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/result_tv_amountAccumulated"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/result_tv_doorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="128dp"
+            android:layout_marginRight="32dp"
+            android:gravity="center"
+            android:text="gate_opens_or_not"
+            android:textSize="20sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="264dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
             android:id="@+id/result_bt_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:backgroundTint="@color/blue_color"
+            android:elevation="4dp"
             android:padding="16dp"
             android:text="Back"
             android:textColor="@color/black"
-            android:textStyle="bold"
-            android:elevation="4dp"/>
-        
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/result_tv_thanks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/thanks_message"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
     </LinearLayout>
-</LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
