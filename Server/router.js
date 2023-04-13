@@ -115,16 +115,27 @@ router.post('/login', async (ctx, next) => {
 
 
 router.post('/checkout', async(ctx,next) => {
-  var missingProduct = false;
+  var somethingIsWrong = false;
+  var total = 0;
+  var discount = 0;
+
   try{
     const db = await init();
     const { idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId } = ctx.request.body;
+
+    //find user
+    var user = await db.get("SELECT * FROM User WHERE uuid = ?",userId)
+    discount = user.accumulated_discount
+    if(!user){
+      somethingIsWrong=true
+      ctx.body = {message: 'user not find'}
+    }
+    console.log(user)
 
     //find all products
     var dataBaseProducts = [];  //List of all products in the data base
     dataBaseProducts = await db.all('SELECT * FROM Product' );
 
-    console.log(dataBaseProducts)
     var productsInBasket = [];  //List that will be completed with the database products that are in the basket
 
       //check if all products in the basket exist in the data base
@@ -138,19 +149,53 @@ router.post('/checkout', async(ctx,next) => {
         })
 
         if(!productFound){
-          
           ctx.body = {message: 'One of the products does not exist in our supermarket'};
-          missingProduct=true;
+          somethingIsWrong=true;
         }
         productsInBasket.push(productFound);
       }
 
-      
+      //Total calculation
+      if(idProductList.length == productQuantityList.length && !somethingIsWrong){
+        for(let i=0; i<idProductList.length; i++){
+          total = total + productsInBasket[i].price_tag*productQuantityList[i]
+        }
+      }
+      else{
+        ctx.body = {message: 'not the same number of products and quantity'}
+        somethingIsWrong=true;
+      } 
 
-    if(!missingProduct){
-      ctx.status = 200;
-      ctx.body = {message: 'Checkout valid'};
-    }
+      //use Discount accumulated
+      if(useAccumulatedDiscount==1 && !somethingIsWrong){
+
+        if(total >= discount){
+          total = total - discount 
+          var result_d = await db.run("UPDATE User SET accumulated_discount = '0' WHERE uuid = ?",userId)
+          discount = 0
+          if (result_d.changes === 0) {
+            throw new Error('Failed to update db');
+          }
+        }
+        else{
+          var difference = total
+          total = 0
+          discount = discount - difference
+          var result_d = await db.run("UPDATE User SET accumulated_discount = '?' WHERE uuid = ?",discount,userId)
+          
+          if (result_d.changes === 0) {
+            throw new Error('Failed to update db');
+          }
+        }
+      }
+
+      if(!somethingIsWrong){
+        await db.run("SELECT accumulated_discount FROM User WHERE uuid = ?",userId)
+        console.log(discount)
+
+        ctx.status = 200;
+        ctx.body = {message: 'Checkout valid',total: total,discount: discount};
+      }
 
   }catch(err){
     //Handle errors
@@ -159,5 +204,3 @@ router.post('/checkout', async(ctx,next) => {
 });
 
 module.exports = router;
-
-
