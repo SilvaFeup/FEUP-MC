@@ -23,7 +23,6 @@ class WelcomeActivity : AppCompatActivity() {
     val shoppingBasketView by lazy { findViewById<RecyclerView>(R.id.welcome_rv_shopping_basket) }
     val btAddProduct by lazy { findViewById<Button>(R.id.welcome_bt_add_product) }
     val btCheckout by lazy { findViewById<Button>(R.id.welcome_bt_checkout) }
-    val btLogout by lazy { findViewById<Button>(R.id.welcome_bt_logout) }
 
     val session by lazy{ Session(this) }
 
@@ -50,9 +49,14 @@ class WelcomeActivity : AppCompatActivity() {
         }
         if (item.itemId == R.id.menu_welcome_see_transactions){
             //TODO
+            val intent = Intent(this, PastTransactionActivity::class.java)
+            startActivity(intent)
         }
         if (item.itemId == R.id.menu_welcome_see_vouchers){
             //TODO
+            val seeVoucherFragment = SeeVoucherFragment()
+            seeVoucherFragment.show(supportFragmentManager, "SeeVoucherFragment")
+
         }
         return super.onOptionsItemSelected(item)
     }
