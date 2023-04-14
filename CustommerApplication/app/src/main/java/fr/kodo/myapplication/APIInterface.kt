@@ -1,8 +1,16 @@
 package fr.kodo.myapplication
 
+import fr.kodo.myapplication.model.Transaction
 import fr.kodo.myapplication.network.*
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Response
+
+
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface APIInterface {
 
@@ -11,4 +19,10 @@ interface APIInterface {
 
     @POST("login")
     suspend fun login(@Body loginRequest: LoginRequest): LoginResponse
+
+
+    @GET("/users/{uuid}/transactions")
+    suspend fun getTransactionsByUserId(@Path("uuid") uuid: String): Call<ResponseBody>
+
+
 }

@@ -203,4 +203,31 @@ router.post('/checkout', async(ctx,next) => {
   }
 });
 
+
+// GET transactions by uuid
+router.get('/users/:uuid/transactions', async (ctx) => {
+  const uuid = ctx.params.uuid;
+  try {
+    //need to ger the user id from the uuid that comes with the path
+    const queryUserId = 'SELECT id FROM User WHERE uuid = ?';
+    const userId = await db.all(queryUserId, [uuid]);
+    // retrieve transactions from the database using the user ID
+    const query = 'SELECT * FROM transactions WHERE customer_id = ?';
+    const rows = await db.all(query, [userId]);
+    const transactions = rows.map((row) => ({
+      id: row.id,
+      totalAmount: row.total_amount,
+      customerId: row.customer_id,
+      voucherId: row.voucher_id,
+      date: row.date_order,
+    }));
+    // return the transactions as JSON
+    ctx.body = transactions;
+  } catch (err) {
+    // handle errors appropriately
+    ctx.status = 500;
+    ctx.body = { error: 'Failed to retrieve transactions' };
+  }
+});
+
 module.exports = router;

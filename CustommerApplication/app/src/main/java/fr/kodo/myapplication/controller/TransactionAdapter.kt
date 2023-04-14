@@ -1,33 +1,23 @@
 package fr.kodo.myapplication.controller
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import fr.kodo.myapplication.APIInterface
+
 import fr.kodo.myapplication.R
+
 import fr.kodo.myapplication.model.Transaction
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-class TransactionAdapter(private val context: Context) :
+
+
+class TransactionAdapter(private val transactions: MutableList<Transaction>) :
+
+
     RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
-
-    val apiInterface: APIInterface by lazy {
-        Retrofit.Builder()
-            //.baseUrl("http://192.168.1.81:3000/")//Axel
-            .baseUrl("http://10.0.2.2:3000/")//emulator
-            //.baseUrl("http://192.168.1.80:3000/")//aurélien
-            //.baseUrl("http://192.168.250.163:3000/")//aurélien with his own connexion
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(APIInterface::class.java)
-    }
-
-
-    private var transactions: List<Transaction> = emptyList()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
@@ -37,6 +27,7 @@ class TransactionAdapter(private val context: Context) :
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
+
         val transaction = transactions[position]
 
         // Bind the transaction data to the corresponding views in the layout
