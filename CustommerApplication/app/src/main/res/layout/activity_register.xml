@@ -137,15 +137,34 @@
             android:layout_marginTop="20dp"
             android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/register_bt_register"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginVertical="20dp"
-            android:text="Register"
-            android:backgroundTint="@color/blue"
-            android:textColor="@color/black"/>
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <Button
+                android:id="@+id/register_bt_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="20dp"
+                android:text="Back"
+                android:backgroundTint="@color/blue"
+                android:textColor="@color/black"
+                android:layout_marginHorizontal="20dp" />
+
+            <Button
+                android:id="@+id/register_bt_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="20dp"
+                android:text="Register"
+                android:backgroundTint="@color/blue"
+                android:textColor="@color/black"
+                android:layout_marginHorizontal="20dp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -52,24 +52,24 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun loginUser(userName:String,password: String) {
-        var responseCode = -1;
 
         lifecycleScope.launch {
             try {
-                responseCode = authController.login(userName,password, this@LoginActivity)
+                authController.login(userName,password, this@LoginActivity)
             } catch (e: Exception) {
                 // Handle network or server error
                 Log.println(Log.ERROR,"Error",e.stackTraceToString())
                 Toast.makeText(this@LoginActivity, "${e.message}", Toast.LENGTH_LONG).show()
+                progressBar.visibility = ProgressBar.GONE
+                btnLogin.isEnabled = true
+                return@launch
             }
 
             withContext(Dispatchers.Main){
-                Log.println(Log.INFO,"Response Code",responseCode.toString())
-                if(responseCode == 1){
-                    //Switch to LoginActivity
-                    val intent = Intent(this@LoginActivity, WelcomeActivity::class.java)
-                    startActivity(intent)
-                }
+                //Switch to LoginActivity
+                val intent = Intent(this@LoginActivity, WelcomeActivity::class.java)
+                startActivity(intent)
+
                 progressBar.visibility = ProgressBar.GONE
                 btnLogin.isEnabled = true
             }

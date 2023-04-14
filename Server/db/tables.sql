@@ -12,19 +12,20 @@ DROP TABLE IF EXISTS Voucher;
 
 CREATE TABLE User (
 
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     uuid VARCHAR(255) NOT NULL UNIQUE,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     name TEXT NOT NULL,
     public_key TEXT NOT NULL,
     accumulated_discount FLOAT DEFAULT 0.0,
+    total_paid_since_last_voucher FLOAT DEFAULT 0.0,
     payment_card INTEGER REFERENCES PaymentCard(id)
 
 );
 
 CREATE TABLE Product (
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     uuid VARCHAR(255) NOT NULL UNIQUE,
     name TEXT NOT NULL,
     price_tag FLOAT NOT NULL
@@ -32,7 +33,7 @@ CREATE TABLE Product (
 
 
 CREATE TABLE ShoppingBasket (
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     accumulated_price FLOAT DEFAULT 0.0,
     n_items INTEGER DEFAULT 0,
     owner INTEGER REFERENCES User(id)
@@ -40,7 +41,7 @@ CREATE TABLE ShoppingBasket (
 );
 
 CREATE TABLE ShoppingBasketProduct (
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     product INTEGER REFERENCES Product(id),
     shop_basket INTEGER REFERENCES ShoppingBasket(id),
     quantity INTEGER DEFAULT 1
@@ -50,10 +51,10 @@ CREATE TABLE ShoppingBasketProduct (
 
 CREATE TABLE OrderInfo (
 
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     total_amount DECIMAL(10,2),
-    customer_id INT REFERENCES User(id),
-    voucher_id INT REFERENCES Voucher(id) DEFAULT -1,
+    customer_id INTEGER REFERENCES User(id),
+    voucher_id INTEGER REFERENCES Voucher(id) DEFAULT -1,
     date_order DATE DEFAULT CURRENT_DATE
 
 
@@ -62,31 +63,31 @@ CREATE TABLE OrderInfo (
 
 CREATE TABLE OrderItem (
 
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     order_id INTEGER REFERENCES OrderInfo(id),
     final_quantity INTEGER DEFAULT 1,
-    product INTEGER REFERENCES User(id)
+    product INTEGER REFERENCES Product(id)
 );
 
 
 CREATE TABLE PaymentCard (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     card_number VARCHAR(16) NOT NULL,
     card_holder_name VARCHAR(255) NOT NULL,
-    expiration_month INT NOT NULL,
-    expiration_year INT NOT NULL,
+    expiration_month INTEGER NOT NULL,
+    expiration_year INTEGER NOT NULL,
     cvv_code VARCHAR(4) NOT NULL
 );
 
 
 
 CREATE TABLE Voucher(
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     uuid VARCHAR(255) NOT NULL UNIQUE,
     owner INTEGER REFERENCES User(id)
 );
 
 
-
-
-
+INSERT INTO Product (uuid, name, price_tag) VALUES ('625a0656-d7b6-11ed-afa1-0242ac120002', 'product0 ', 3.99);
+INSERT INTO Product (uuid, name, price_tag) VALUES ('77f2fe28-d7b6-11ed-afa1-0242ac120002', 'product1 ', 100.0);
+INSERT INTO Product (uuid, name, price_tag) VALUES ('807e8a08-d7b6-11ed-afa1-0242ac120002', 'product2 ', 0.95);

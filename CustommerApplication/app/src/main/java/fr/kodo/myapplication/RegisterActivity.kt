@@ -37,10 +37,15 @@ class RegisterActivity : AppCompatActivity() {
     val progressBar by lazy { findViewById<ProgressBar>(R.id.register_progress_bar) }
 
     val btRegister by lazy { findViewById<Button>(R.id.register_bt_register) }
+    val btLogin by lazy { findViewById<Button>(R.id.register_bt_login) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        btLogin.setOnClickListener{
+            finish()
+        }
 
         btRegister.setOnClickListener{
             val name = edtName.text.toString()
@@ -53,27 +58,27 @@ class RegisterActivity : AppCompatActivity() {
             val cardExpirationYear = edtCardExpirationYear.text.toString()
             val cardCvvCode = edtCardSecurityCode.text.toString()
 
-            var responseCode = -1
 
             progressBar.visibility = ProgressBar.VISIBLE
             btRegister.isEnabled = false
 
             lifecycleScope.launch {
                 try {
-                    responseCode = RegisterController.register(name,nickname, password, confirmPassword,
+                    RegisterController.register(name,nickname, password, confirmPassword,
                         cardNumber, cardHolderName, cardExpirationMonth,cardExpirationYear, cardCvvCode)
 
                 }catch (e: Exception) {
                     Log.e("Erro: ", e.stackTraceToString())
                     Toast.makeText(this@RegisterActivity, e.message, Toast.LENGTH_LONG).show()
+                    progressBar.visibility = ProgressBar.GONE
+                    btRegister.isEnabled = true
+                    return@launch
                 }
 
                 withContext(Dispatchers.Main){
-                    if(responseCode == 1){
-                        //Switch to LoginActivity
-                        val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-                        startActivity(intent)
-                    }
+                    //Switch to LoginActivity
+                    val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+                    startActivity(intent)
 
                     progressBar.visibility = ProgressBar.GONE
                     btRegister.isEnabled = true

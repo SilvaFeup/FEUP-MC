@@ -39,7 +39,7 @@ class AuthController {
         expiration_month: String,
         expiration_year: String,
         security_code: String
-    ): Int {
+    ) {
         //if one of the fields is empty, return
         if (name.isEmpty() || userName.isEmpty() || passwordAuthentication.isEmpty() || confirmPasswordAuthentication.isEmpty() || card_number.isEmpty() || card_holder_name.isEmpty() || security_code.isEmpty()) {
             throw Exception("All fields must be filled")
@@ -56,16 +56,13 @@ class AuthController {
 
         val registerInfo = apiInterface.register(registerRequest)
 
-        Log.e("Register Info: ", registerInfo.message);
-
-        if(registerInfo.message.contentEquals("User registered successfully")){
-            return 1;
+        if (registerInfo.error == 1) {
+            throw Exception(registerInfo.message)
         }
-        return -1;
     }
 
 
-    suspend fun login(userName: String, passwordAuthentication: String, context: Context) : Int{
+    suspend fun login(userName: String, passwordAuthentication: String, context: Context){
         val session = Session(context)
 
         //if one of the fields is empty, return
@@ -76,11 +73,13 @@ class AuthController {
         val loginRequest = LoginRequest(userName,passwordAuthentication)
         val loginInfo = apiInterface.login(loginRequest)
 
-        if(loginInfo.message.contentEquals("User logged in successfully")){
-            session.createSession(loginInfo.userId, loginInfo.supermarket_publickey)
-            return 1;
+        if (loginInfo.error == 1) {
+            throw Exception(loginInfo.message)
         }
-        return -1;
+
+        if(loginInfo.error == 0){
+            session.createSession(loginInfo.userId, loginInfo.supermarket_publickey)
+        }
     }
 
     suspend fun voucher(userUUID: String?): List<Voucher> {

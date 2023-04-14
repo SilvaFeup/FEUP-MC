@@ -23,17 +23,18 @@ router.post('/register', async (ctx,next) => {
         // Check if user already exists
     const userExists = await db.get('SELECT * FROM User WHERE username = ?', username);
     if (userExists) {
-        ctx.status = 409;
-        ctx.body = { message: 'User already exists'};
+        ctx.body = { error: 1, message: 'User already exists'};
         return;
     }
 
-          // Check if card already exists
-      const cardExists = await db.get('SELECT * FROM PaymentCard WHERE card_number = ?', card_number);
-      if (cardExists) {
-        return;
-      }
+    var card = 0;
 
+    // Check if card already exists
+    const cardExists = await db.get('SELECT * FROM PaymentCard WHERE card_number = ?', card_number);
+    if (cardExists) {
+      card = cardExists.id;
+    }
+    else{
       //Insert new card into the database
 
       const result = await db.run('INSERT INTO PaymentCard (card_number,card_holder_name, expiration_month,expiration_year, cvv_code) VALUES (?, ?, ?, ?,?)', [card_number,card_holder_name, expiration_month,expiration_year, cvv_code]);
@@ -41,24 +42,24 @@ router.post('/register', async (ctx,next) => {
           throw new Error('Failed to register card');
       }
 
-      const card = await db.get('SELECT id FROM PaymentCard WHERE card_number = ?', card_number);
+      const cardObject = await db.get('SELECT id FROM PaymentCard WHERE card_number = ?', card_number);
+      card = cardObject.id;
+    }
 
-      const unique_id = uuidv4(); 
+    const unique_id = uuidv4(); 
+
+    // Encrypt password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
   
-      // Encrypt password
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-    
-      // Insert new user into the database
-      const result_u = await db.run('INSERT INTO User (uuid, username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,? ,?)', [unique_id, username, hashedPassword,name,public_key,card]);
-      if (result_u.changes === 0) {
-          throw new Error('Failed to register user');
-      }
-    
-      // Return a success response
-      ctx.status = 200;
-      ctx.body = { message: 'User registered successfully'};
-
+    // Insert new user into the database
+    const result_u = await db.run('INSERT INTO User (uuid, username, password, name, public_key,payment_card) VALUES (?, ?, ?, ?,? ,?)', [unique_id, username, hashedPassword,name,public_key,card]);
+    if (result_u.changes === 0) {
+        throw new Error('Failed to register user');
+    }
+  
+    // Return a success response
+    ctx.body = { error: 0, message: 'User registered successfully'};
     
   } catch (err) {
     // Handle errors
@@ -92,23 +93,23 @@ router.post('/login', async (ctx, next) => {
     // Find user by username
     const user = await db.get('SELECT * FROM User WHERE username = ?', username);
     if (!user) {
-      ctx.status = 401;
-      ctx.body = { message: 'username or password is incorrect'};
+      ctx.body = { error: 1, message: 'Username or password is incorrect'};
       return;
     }
 
     // Compare password
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      ctx.status = 401;
-      ctx.body = { message: 'username or password is incorrect'};
+      ctx.body = { error: 1, message: 'Username or password is incorrect'};
       return;
     }
 
     ctx.status = 200;
     ctx.body = { message: 'User logged in successfully', userId: user.uuid, supermarket_publickey: publicKey };
+    return;
   } catch (err) {
     // Handle errors
+    console.log(err.stack)
   }
 });
 
