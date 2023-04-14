@@ -95,12 +95,13 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("valid",true)
                 intent.putExtra("total",response[0])
                 intent.putExtra("discount",response[1])
+
+                Log.e("total", response[0])
             }
             else{
                 intent.putExtra("valid",false)
                 Toast.makeText(this@MainActivity,response[2],Toast.LENGTH_LONG).show()
             }
-
             startActivity(intent)
         }
     }

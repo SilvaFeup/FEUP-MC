@@ -24,10 +24,10 @@ class result_activity : AppCompatActivity() {
             tv_result.setText(R.string.positive_result_text)
             tv_gate.setText(R.string.open_gate)
 
-            var total = intent.getFloatExtra("total",0f)
-            tv_total.text = "Total payed :\t"+ total.toString() + "€"
+            var total = intent.getStringExtra("total")
+            tv_total.text = "Total payed :\t$total€"
 
-            var discount = intent.getFloatExtra("discount",0f)
+            var discount = intent.getStringExtra("discount")
             tv_accumulatedDiscount.text = "You have $discount€ left in your account."
         }
         else{
