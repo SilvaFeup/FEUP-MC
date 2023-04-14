@@ -115,10 +115,24 @@ router.post('/login', async (ctx, next) => {
 
 
 router.post('/checkout', async(ctx,next) => {
-  var missingProduct = false;
+  var somethingIsWrong = false;
+  var total = 0;
+  var discount = 0;
+
   try{
     const db = await init();
-    const { idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId } = ctx.request.body;
+    const { idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId, date } = ctx.request.body;
+
+    //find user
+    var user = await db.get("SELECT * FROM User WHERE uuid = ?",userId)
+    
+    if(!user){
+      somethingIsWrong=true
+      ctx.body = {message: 'user not find'}
+    }
+    else{discount = user.accumulated_discount}
+    
+    //console.log(user)
 
     //find all products
     var dataBaseProducts = [];  //List of all products in the data base
@@ -131,25 +145,109 @@ router.post('/checkout', async(ctx,next) => {
         var productFound = null;
 
         dataBaseProducts.forEach( DBproduct=> {
-          if(DBproduct.id == idProductList[i]){ 
+          if(DBproduct.uuid == idProductList[i]){ 
             productFound = DBproduct;
           }
         })
 
         if(!productFound){
-          
           ctx.body = {message: 'One of the products does not exist in our supermarket'};
-          missingProduct=true;
+          somethingIsWrong=true;
         }
         productsInBasket.push(productFound);
       }
 
-      
+      //console.log(productsInBasket)
 
-    if(!missingProduct){
-      ctx.status = 200;
-      ctx.body = {message: 'Checkout valid'};
-    }
+      //Total calculation
+      if(idProductList.length == productQuantityList.length && !somethingIsWrong){
+        for(let i=0; i<idProductList.length; i++){
+          total = total + productsInBasket[i].price_tag*productQuantityList[i]
+        }
+      }
+      else{
+        ctx.body = {message: 'not the same number of products and quantity'}
+        somethingIsWrong=true;
+      } 
+
+      console.log(total)
+
+      //use Discount accumulated
+      if(useAccumulatedDiscount==1 && !somethingIsWrong){
+
+        if(total >= discount){
+          total = total - discount 
+          console.log(total)
+          var result_d = await db.run("UPDATE User SET accumulated_discount = '0' WHERE uuid = ?",userId)
+          discount = 0
+          console.log(result_d)
+          if (result_d.changes === 0) {
+            throw new Error('Failed to update db');
+          }
+        }
+        else{
+          var difference = total
+          total = 0
+          discount = discount - difference
+          console.log(discount, user.id)
+          var result_d = await db.run("UPDATE User SET accumulated_discount = ? WHERE uuid = ?",discount,userId)
+          console.log(result_d)
+          
+          if (result_d.changes === 0) {
+            throw new Error('Failed to update db');
+          }
+        }
+      }
+
+      console.log(discount)
+
+      //use a voucher
+      var voucherIdForDb =0
+      if(voucherId>0){
+        //is the id of voucher exist?
+        var listVoucher = await db.all("SELECT * FROM Voucher Where owner = ?",user.id)
+        var present = false;
+        listVoucher.forEach(voucher => {
+          if(voucher.id == voucherId){present = true}
+        })
+        voucherIdForDb =voucherId
+
+        //calcul of value and add it to the db
+        if(present == true){
+          var voucherValue = total*15/100;
+          
+          discount = discount + voucherValue.toFixed(2)
+          
+          await db.run("UPDATE User set accumulated_discount = ? WHERE uuid = ?",discount, userId)
+          await db.run("DELETE FROM Voucher WHERE id = ?",voucherId)
+        }
+        else{
+          ctx.body = {message: 'Voucher unknown'}
+          somethingIsWrong = true;
+        }
+      }
+      else{voucherIdForDb = -1}
+
+      console.log(discount)
+
+
+      //send a validation to the application
+      if(!somethingIsWrong){
+        var sql = ""
+        await db.run("SELECT accumulated_discount FROM User WHERE uuid = ?",userId)
+        await db.run("INSERT INTO OrderInfo (total_amount, customer_id, voucher_id, date_order) Values(?,?,?,?)",total,user.id,voucherIdForDb,date)
+        var orderId = await db.get("SELECT last_insert_rowid() AS id")
+
+        for(i=0; i<productsInBasket.length;i++){
+          //sql = sql + "INSERT INTO OrderItem(order_id, final_quantity, product) VALUES("+orderId.id+","+productQuantityList[i]+","+productsInBasket[i].id+");"
+          await db.run("INSERT INTO OrderItem(order_id, final_quantity, product) VALUES(?,?,?)",orderId.id,productQuantityList[i],productsInBasket[i].id)
+        }
+        //console.log(sql)
+        //await db.run(sql)
+
+        ctx.status = 200;
+        ctx.body = {message: 'Checkout valid',total: total,discount: discount};
+      }
 
   }catch(err){
     //Handle errors
@@ -157,6 +255,40 @@ router.post('/checkout', async(ctx,next) => {
   }
 });
 
+
+// GET transactions by uuid
+router.get('/users/:uuid/transactions', async (ctx) => {
+  const uuid = ctx.params.uuid;
+  const db = await init();
+  try {
+
+    //need to ger the user id from the uuid that comes with the path
+    const queryUserId = 'SELECT id FROM User WHERE uuid = ?';
+    const userId = await db.all(queryUserId, [uuid]);
+
+    // retrieve transactions from the database using the user ID
+    const query = 'SELECT * FROM OrderInfo WHERE customer_id = ?';
+    const rows = await db.all(query, [userId]);
+    const transactions = rows.map((row) => ({
+      id: row.id,
+      totalAmount: row.total_amount,
+      customerId: row.customer_id,
+      voucherId: row.voucher_id,
+      date: row.date_order,
+    }));
+
+    // return the transactions as JSON
+    console.log(transactions);
+    ctx.body = transactions;
+
+  } catch (err) {
+
+    console.error(err.stack);
+    // handle errors appropriately
+    ctx.status = 500;
+    ctx.body = { error: 'Failed to retrieve transactions' };
+
+  }
+});
+
 module.exports = router;
-
-
