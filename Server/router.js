@@ -132,7 +132,7 @@ router.post('/checkout', async(ctx,next) => {
     }
     else{discount = user.accumulated_discount}
     
-    console.log(user)
+    //console.log(user)
 
     //find all products
     var dataBaseProducts = [];  //List of all products in the data base
@@ -157,6 +157,8 @@ router.post('/checkout', async(ctx,next) => {
         productsInBasket.push(productFound);
       }
 
+      //console.log(productsInBasket)
+
       //Total calculation
       if(idProductList.length == productQuantityList.length && !somethingIsWrong){
         for(let i=0; i<idProductList.length; i++){
@@ -168,13 +170,17 @@ router.post('/checkout', async(ctx,next) => {
         somethingIsWrong=true;
       } 
 
+      console.log(total)
+
       //use Discount accumulated
       if(useAccumulatedDiscount==1 && !somethingIsWrong){
 
         if(total >= discount){
           total = total - discount 
+          console.log(total)
           var result_d = await db.run("UPDATE User SET accumulated_discount = '0' WHERE uuid = ?",userId)
           discount = 0
+          console.log(result_d)
           if (result_d.changes === 0) {
             throw new Error('Failed to update db');
           }
@@ -183,13 +189,17 @@ router.post('/checkout', async(ctx,next) => {
           var difference = total
           total = 0
           discount = discount - difference
-          var result_d = await db.run("UPDATE User SET accumulated_discount = '?' WHERE uuid = ?",discount,userId)
+          console.log(discount, user.id)
+          var result_d = await db.run("UPDATE User SET accumulated_discount = ? WHERE uuid = ?",discount,userId)
+          console.log(result_d)
           
           if (result_d.changes === 0) {
             throw new Error('Failed to update db');
           }
         }
       }
+
+      console.log(discount)
 
       //use a voucher
       var voucherIdForDb =0
@@ -217,6 +227,9 @@ router.post('/checkout', async(ctx,next) => {
         }
       }
       else{voucherIdForDb = -1}
+
+      console.log(discount)
+
 
       //send a validation to the application
       if(!somethingIsWrong){

@@ -13,9 +13,9 @@ import java.util.UUID
 class CheckoutController {
     val apiInterface: APIInterface by lazy {
         Retrofit.Builder()
-            //.baseUrl("http://192.168.1.81:3000/")//Axel
+            .baseUrl("http://192.168.1.81:3000/")//Axel
             //.baseUrl("http://192.168.1.80:3000/")//aurélien
-            .baseUrl("http://192.168.191.163:3000/")//aurélien with his own connexion
+            //.baseUrl("http://192.168.191.163:3000/")//aurélien with his own connexion
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(APIInterface::class.java)

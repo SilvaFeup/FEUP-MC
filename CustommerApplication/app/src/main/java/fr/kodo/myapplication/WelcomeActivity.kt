@@ -108,10 +108,9 @@ class WelcomeActivity : AppCompatActivity() {
 
                     shoppingBasket.add(
                         Product(
-                            UUID.randomUUID(),//TODO: get the id from the QRCode
-                            result[0],
-                            result[1].toDouble(),
-                            1
+                            UUID.fromString(result[0]),
+                            result[1],
+                            result[2].toDouble()
                         )
                     )
                     shoppingBasketView.adapter?.notifyItemInserted(shoppingBasket.size - 1)
