@@ -18,4 +18,5 @@
     <string name="logout">Logout</string>
     <string name="checkout">Checkout</string>
     <string name="add_product">Add Product</string>
+    <string name="empty_state_text">No Past Transactions</string>
 </resources>
