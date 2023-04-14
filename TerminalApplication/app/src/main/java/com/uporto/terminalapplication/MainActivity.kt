@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         if (str.isEmpty()){
             throw Exception("empty basket!")
         }
+        Log.e("basket", str)
         var array = str.split(",")
 
         //the QR-code must contain at least the userId, the bool for discount and the voucherId
@@ -85,11 +86,12 @@ class MainActivity : AppCompatActivity() {
             productQuantityList.add(array[i+1].toInt())
         }
         val checkoutController = CheckoutController()
+
         lifecycleScope.launch{
+            try {
+                var response = checkoutController.checkout(idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId)
 
-            var response = checkoutController.checkout(idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId)
-
-            var intent = Intent(this@MainActivity,result_activity::class.java)
+                var intent = Intent(this@MainActivity,result_activity::class.java)
 
             if(response[0].toDouble()>=0f){
                 intent.putExtra("valid",true)
@@ -102,7 +104,11 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("valid",false)
                 Toast.makeText(this@MainActivity,response[2],Toast.LENGTH_LONG).show()
             }
-            startActivity(intent)
+                startActivity(intent)
+            }
+            catch (e: Exception){
+                Log.e("Error", e.stackTraceToString())
+            }
         }
     }
 }
