@@ -7,12 +7,20 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import fr.kodo.myapplication.controller.AuthController
 import fr.kodo.myapplication.controller.ShoppingBasketAdapter
 import fr.kodo.myapplication.model.Product
 import fr.kodo.myapplication.controller.scan
 import fr.kodo.myapplication.model.Session
+import fr.kodo.myapplication.model.Voucher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -53,10 +61,8 @@ class WelcomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
         if (item.itemId == R.id.menu_welcome_see_vouchers){
-            //TODO
             val seeVoucherFragment = SeeVoucherFragment()
             seeVoucherFragment.show(supportFragmentManager, "SeeVoucherFragment")
-
         }
         return super.onOptionsItemSelected(item)
     }

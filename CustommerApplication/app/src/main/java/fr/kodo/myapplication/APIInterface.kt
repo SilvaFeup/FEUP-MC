@@ -20,6 +20,9 @@ interface APIInterface {
     @POST("login")
     suspend fun login(@Body loginRequest: LoginRequest): LoginResponse
 
+    @POST("voucher")
+    suspend fun voucher(@Body voucherRequest: VoucherRequest): VoucherResponse
+
     @GET("/users/{uuid}/transactions")
     suspend fun getTransactionsByUserId(@Path("uuid") uuid: String): getPastTransactionResponse
 
