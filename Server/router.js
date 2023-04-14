@@ -220,24 +220,19 @@ router.post('/checkout', async(ctx,next) => {
 
       //send a validation to the application
       if(!somethingIsWrong){
-        var sql = ""
         await db.run("SELECT accumulated_discount FROM User WHERE uuid = ?",userId)
         await db.run("INSERT INTO OrderInfo (total_amount, customer_id, voucher_id, date_order) Values(?,?,?,?)",total,user.id,voucherIdForDb,date)
         var orderId = await db.get("SELECT last_insert_rowid() AS id")
 
         for(i=0; i<productsInBasket.length;i++){
-          //sql = sql + "INSERT INTO OrderItem(order_id, final_quantity, product) VALUES("+orderId.id+","+productQuantityList[i]+","+productsInBasket[i].id+");"
           await db.run("INSERT INTO OrderItem(order_id, final_quantity, product) VALUES(?,?,?)",orderId.id,productQuantityList[i],productsInBasket[i].id)
         }
-        //console.log(sql)
-        //await db.run(sql)
 
         ctx.status = 200;
         ctx.body = {message: 'Checkout valid',total: total,discount: discount};
       }
 
   }catch(err){
-    //Handle errors
     console.log(err.stack)
   }
 });
