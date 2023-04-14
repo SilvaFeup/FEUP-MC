@@ -35,10 +35,19 @@ class OrderInfoFragment: DialogFragment() {
                 Log.println(Log.WARN, "OrderInfoFragment", "message: $message totalPrice: $totalPrice userUUID: $userUUID")
 
                 //the message is formatted as "id,quantity,id,quantity...,UserUUID,useAccumulatedDiscount,VoucherId"
-                val VoucherId = view.findViewById<EditText>(R.id.order_info_voucher_id).text.toString()
-                val useAccumulatedDiscount = view.findViewById<Switch>(R.id.order_info_use_accumulated_discount).text.toString()
+                var VoucherId = view.findViewById<EditText>(R.id.order_info_voucher_id).text.toString()
+                val useAccumulatedDiscount = view.findViewById<Switch>(R.id.order_info_use_accumulated_discount).isChecked
 
-                val newMessage = "$message$userUUID,$useAccumulatedDiscount,$VoucherId"
+                var useAccumulatedDiscountInt = "0"
+
+                if (useAccumulatedDiscount){
+                    useAccumulatedDiscountInt = "1"
+                }
+
+                if (VoucherId.isEmpty()){
+                    VoucherId = "0"
+                }
+                val newMessage = "$message$userUUID,$useAccumulatedDiscountInt,$VoucherId"
 
                 //Start CheckoutQRCodeFragment
                 val checkoutQRCodeFragment = CheckoutQRCodeFragment()
