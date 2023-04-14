@@ -121,15 +121,17 @@ router.post('/checkout', async(ctx,next) => {
 
   try{
     const db = await init();
-    const { idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId } = ctx.request.body;
+    const { idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId, date } = ctx.request.body;
 
     //find user
     var user = await db.get("SELECT * FROM User WHERE uuid = ?",userId)
-    discount = user.accumulated_discount
+    
     if(!user){
       somethingIsWrong=true
       ctx.body = {message: 'user not find'}
     }
+    else{discount = user.accumulated_discount}
+    
     console.log(user)
 
     //find all products
@@ -189,9 +191,46 @@ router.post('/checkout', async(ctx,next) => {
         }
       }
 
+      //use a voucher
+      var voucherIdForDb =0
+      if(voucherId>0){
+        //is the id of voucher exist?
+        var listVoucher = await db.all("SELECT * FROM Voucher Where owner = ?",user.id)
+        var present = false;
+        listVoucher.forEach(voucher => {
+          if(voucher.id == voucherId){present = true}
+        })
+        voucherIdForDb =voucherId
+
+        //calcul of value and add it to the db
+        if(present == true){
+          var voucherValue = total*15/100;
+          
+          discount = discount + voucherValue.toFixed(2)
+          
+          await db.run("UPDATE User set accumulated_discount = ? WHERE uuid = ?",discount, userId)
+          await db.run("DELETE FROM Voucher WHERE id = ?",voucherId)
+        }
+        else{
+          ctx.body = {message: 'Voucher unknown'}
+          somethingIsWrong = true;
+        }
+      }
+      else{voucherIdForDb = -1}
+
+      //send a validation to the application
       if(!somethingIsWrong){
+        var sql = ""
         await db.run("SELECT accumulated_discount FROM User WHERE uuid = ?",userId)
-        console.log(discount)
+        await db.run("INSERT INTO OrderInfo (total_amount, customer_id, voucher_id, date_order) Values(?,?,?,?)",total,user.id,voucherIdForDb,date)
+        var orderId = await db.get("SELECT last_insert_rowid() AS id")
+
+        for(i=0; i<productsInBasket.length;i++){
+          //sql = sql + "INSERT INTO OrderItem(order_id, final_quantity, product) VALUES("+orderId.id+","+productQuantityList[i]+","+productsInBasket[i].id+");"
+          await db.run("INSERT INTO OrderItem(order_id, final_quantity, product) VALUES(?,?,?)",orderId.id,productQuantityList[i],productsInBasket[i].id)
+        }
+        //console.log(sql)
+        //await db.run(sql)
 
         ctx.status = 200;
         ctx.body = {message: 'Checkout valid',total: total,discount: discount};
