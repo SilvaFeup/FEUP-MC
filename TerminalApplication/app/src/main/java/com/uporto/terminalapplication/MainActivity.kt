@@ -1,21 +1,17 @@
 package com.uporto.terminalapplication
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
-import android.net.wifi.hotspot2.pps.Credential.CertificateCredential
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.uporto.terminalapplication.controller.CheckoutController
-import com.uporto.terminalapplication.model.Product
-import com.uporto.terminalapplication.network.CheckoutRequest
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -90,19 +86,24 @@ class MainActivity : AppCompatActivity() {
             productQuantityList.add(array[i+1].toInt())
         }
         val checkoutController = CheckoutController()
+
         lifecycleScope.launch{
             try {
-                var responseCode = checkoutController.checkout(idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId)
+                var response = checkoutController.checkout(idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId)
 
                 var intent = Intent(this@MainActivity,result_activity::class.java)
 
-                if(responseCode[0]>=0f){
-                    intent.putExtra("valid",true)
-                    intent.putExtra("total",responseCode[0])
-                    intent.putExtra("discount",responseCode[1])
-                }
-                else{ intent.putExtra("valid",false)}
+            if(response[0].toDouble()>=0f){
+                intent.putExtra("valid",true)
+                intent.putExtra("total",response[0])
+                intent.putExtra("discount",response[1])
 
+                Log.e("total", response[0])
+            }
+            else{
+                intent.putExtra("valid",false)
+                Toast.makeText(this@MainActivity,response[2],Toast.LENGTH_LONG).show()
+            }
                 startActivity(intent)
             }
             catch (e: Exception){
