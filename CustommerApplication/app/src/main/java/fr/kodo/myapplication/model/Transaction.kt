@@ -6,6 +6,7 @@ data class Transaction(
     val customerId: Int,
     val totalAmount: Double,
     val voucherId: Int,
-    val dateOrder: Date
+    val dateOrder: Date,
+    val productList: ArrayList<Product>
 )
 

@@ -20,9 +20,7 @@ interface APIInterface {
     @POST("login")
     suspend fun login(@Body loginRequest: LoginRequest): LoginResponse
 
-
     @GET("/users/{uuid}/transactions")
-    suspend fun getTransactionsByUserId(@Path("uuid") uuid: String): Call<ResponseBody>
-
+    suspend fun getTransactionsByUserId(@Path("uuid") uuid: String): getPastTransactionResponse
 
 }
