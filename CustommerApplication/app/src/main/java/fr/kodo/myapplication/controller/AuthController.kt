@@ -6,6 +6,7 @@ import android.util.Base64
 import android.util.Log
 import fr.kodo.myapplication.APIInterface
 import fr.kodo.myapplication.model.Session
+import fr.kodo.myapplication.model.Transaction
 import fr.kodo.myapplication.network.LoginRequest
 import fr.kodo.myapplication.network.RegisterRequest
 import retrofit2.Retrofit
@@ -77,5 +78,9 @@ class AuthController {
             return 1;
         }
         return -1;
+    }
+
+    suspend fun getTransactions(uuid: String): ArrayList<Transaction> {
+        return apiInterface.getTransactionsByUserId(uuid).pastTransactionList
     }
 }
