@@ -6,10 +6,13 @@ import android.util.Base64
 import android.util.Log
 import fr.kodo.myapplication.APIInterface
 import fr.kodo.myapplication.model.Session
+import fr.kodo.myapplication.model.Voucher
 import fr.kodo.myapplication.network.LoginRequest
 import fr.kodo.myapplication.network.RegisterRequest
+import fr.kodo.myapplication.network.VoucherRequest
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.UUID
 
 class AuthController {
 
@@ -77,5 +80,13 @@ class AuthController {
             return 1;
         }
         return -1;
+    }
+
+    suspend fun voucher(userUUID: String?): List<Voucher>{
+        val owner:UUID = UUID.fromString(userUUID)
+        val voucherRequest = VoucherRequest(owner)
+        val voucherInfo = apiInterface.voucher(voucherRequest)
+
+        return voucherInfo.voucherList
     }
 }

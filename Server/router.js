@@ -107,7 +107,6 @@ router.post('/login', async (ctx, next) => {
 
     ctx.status = 200;
     ctx.body = { message: 'User logged in successfully', userId: user.uuid, supermarket_publickey: publicKey };
-    console.log(user.uuid);
   } catch (err) {
     // Handle errors
   }
@@ -204,3 +203,23 @@ router.post('/checkout', async(ctx,next) => {
 });
 
 module.exports = router;
+
+
+router.post('/voucher', async (ctx, next) => {
+  try{
+    const db = await init();
+    const {owner} = ctx.request.body;
+
+    const user = await db.get('SELECT * FROM User WHERE uuid = ?', owner);
+
+    const voucherList = await db.all('SELECT * FROM Voucher WHERE owner = ?', user.id);
+    console.log(voucherList);
+
+    ctx.body = {voucherList};
+    
+    
+  }catch(err){
+    //Handle errors
+    console.error(err.stack)
+  }
+});
