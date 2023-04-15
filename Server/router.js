@@ -132,15 +132,17 @@ router.post('/checkout', async(ctx,next) => {
     }
     else{discount = user.accumulated_discount}
     
-    //console.log(user)
 
     //find all products
-    var dataBaseProducts = [];  //List of all products in the data base
-    dataBaseProducts = await db.all('SELECT * FROM Product' );
-
-    var productsInBasket = [];  //List that will be completed with the database products that are in the basket
+    if(!somethingIsWrong){
+      var dataBaseProducts = [];  //List of all products in the data base
+      dataBaseProducts = await db.all('SELECT * FROM Product' );
+    }
+    
 
       //check if all products in the basket exist in the data base
+    if(!somethingIsWrong){
+      var productsInBasket = [];  //List that will be completed with the database products that are in the basket
       for (let i = 0; i < idProductList.length; i++) {
         var productFound = null;
 
@@ -156,84 +158,89 @@ router.post('/checkout', async(ctx,next) => {
         }
         productsInBasket.push(productFound);
       }
+    }
 
-      //console.log(productsInBasket)
 
       //Total calculation
-      if(idProductList.length == productQuantityList.length && !somethingIsWrong){
-        for(let i=0; i<idProductList.length; i++){
-          total = total + productsInBasket[i].price_tag*productQuantityList[i]
+      if(!somethingIsWrong){
+        if(idProductList.length == productQuantityList.length){
+          for(let i=0; i<idProductList.length; i++){
+            total = total + parseFloat(productsInBasket[i].price_tag*productQuantityList[i])
+          }
+          total = parseFloat(total.toFixed(2))
         }
+        else{
+          ctx.body = {message: 'not the same number of products and quantity'}
+          somethingIsWrong=true;
+        } 
       }
-      else{
-        ctx.body = {message: 'not the same number of products and quantity'}
-        somethingIsWrong=true;
-      } 
 
-      console.log(total)
 
       //use Discount accumulated
-      if(useAccumulatedDiscount==1 && !somethingIsWrong){
+      if(!somethingIsWrong){
+        if(useAccumulatedDiscount==1){
 
-        if(total >= discount){
-          total = total - discount 
-          console.log(total)
-          var result_d = await db.run("UPDATE User SET accumulated_discount = '0' WHERE uuid = ?",userId)
-          discount = 0
-          console.log(result_d)
-          if (result_d.changes === 0) {
-            throw new Error('Failed to update db');
+          if(total >= discount){
+            total = total - discount 
+            await db.run("UPDATE User SET accumulated_discount = '0' WHERE uuid = ?",user.uuid)
+            discount = 0
           }
-        }
-        else{
-          var difference = total
-          total = 0
-          discount = discount - difference
-          console.log(discount, user.id)
-          var result_d = await db.run("UPDATE User SET accumulated_discount = ? WHERE uuid = ?",discount,userId)
-          console.log(result_d)
-          
-          if (result_d.changes === 0) {
-            throw new Error('Failed to update db');
+          else{
+            var difference = total
+            total = 0
+            discount = discount - difference
+            await db.run("UPDATE User SET accumulated_discount = ? WHERE uuid = ?",discount,user.uuid)
+            
           }
         }
       }
-
-      console.log(discount)
 
       //use a voucher
-      var voucherIdForDb =0
-      if(voucherId>0){
-        //is the id of voucher exist?
-        var listVoucher = await db.all("SELECT * FROM Voucher Where owner = ?",user.id)
-        var present = false;
-        listVoucher.forEach(voucher => {
-          if(voucher.id == voucherId){present = true}
-        })
-        voucherIdForDb =voucherId
+      if(!somethingIsWrong){
+        var voucherIdForDb =0
+        if(voucherId>0){
+          //is the id of voucher exist?
+          var listVoucher = await db.all("SELECT * FROM Voucher Where owner = ?",user.id)
+          var present = false;
+          listVoucher.forEach(voucher => {
+            if(voucher.id == voucherId){present = true}
+          })
+          voucherIdForDb =voucherId
 
-        //calcul of value and add it to the db
-        if(present == true){
-          var voucherValue = total*15/100;
-          
-          discount = discount + voucherValue.toFixed(2)
-          
-          await db.run("UPDATE User set accumulated_discount = ? WHERE uuid = ?",discount, userId)
-          await db.run("DELETE FROM Voucher WHERE id = ?",voucherId)
+          //calcul of value and add it to the db
+          if(present == true){
+            var voucherValue = total*15/100;
+            
+            discount =parseFloat( discount + voucherValue.toFixed(2))
+            
+            await db.run("UPDATE User set accumulated_discount = ? WHERE uuid = ?",discount, user.uuid)
+            await db.run("DELETE FROM Voucher WHERE id = ?",voucherId)
+          }
+          else{
+            ctx.body = {message: 'Voucher unknown'}
+            somethingIsWrong = true;
+          }
         }
-        else{
-          ctx.body = {message: 'Voucher unknown'}
-          somethingIsWrong = true;
-        }
+        else{voucherIdForDb = -1}
       }
-      else{voucherIdForDb = -1}
 
-      console.log(discount)
+      //Creation of voucher
+      if(!somethingIsWrong){
+        var totalSinceNextVoucher = parseFloat(user.total_paid_since_last_voucher + total)
+        var numberOfVoucher = totalSinceNextVoucher/100.0
+        numberOfVoucher =parseFloat(Math.round(numberOfVoucher))
 
+        for(i=0; i<numberOfVoucher; i++){
+          var voucherUUID = uuidv4()
+          await db.run("INSERT INTO Voucher(uuid, owner) VALUES(?,?)",voucherUUID,user.id)
+        }
+        totalSinceNextVoucher = totalSinceNextVoucher - (numberOfVoucher*100)
+        await db.run("UPDATE User SET total_paid_since_last_voucher = ? WHERE uuid = ?",totalSinceNextVoucher.toFixed(2), user.uuid)        
+      }
 
       //send a validation to the application
       if(!somethingIsWrong){
-        await db.run("SELECT accumulated_discount FROM User WHERE uuid = ?",userId)
+        //await db.run("SELECT accumulated_discount FROM User WHERE uuid = ?",user.uuid)
         await db.run("INSERT INTO OrderInfo (total_amount, customer_id, voucher_id, date_order) Values(?,?,?,?)",total,user.id,voucherIdForDb,date)
         var orderId = await db.get("SELECT last_insert_rowid() AS id")
 
@@ -250,7 +257,6 @@ router.post('/checkout', async(ctx,next) => {
   }
 });
 
-module.exports = router;
 
 
 router.post('/voucher', async (ctx, next) => {
