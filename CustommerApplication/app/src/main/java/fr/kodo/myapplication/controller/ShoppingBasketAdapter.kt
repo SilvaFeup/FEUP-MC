@@ -13,7 +13,7 @@ import fr.kodo.myapplication.R
 import fr.kodo.myapplication.model.Product
 import java.text.DecimalFormat
 
-class ShoppingBasketAdapter(private val shoppingBasket: ArrayList<Product>) : RecyclerView.Adapter<ShoppingBasketViewHolder>() {
+class ShoppingBasketAdapter(private val shoppingBasket: ArrayList<Product>, val empty_message: TextView) : RecyclerView.Adapter<ShoppingBasketViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingBasketViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.shopping_basket_item, parent, false)
         return ShoppingBasketViewHolder(itemView)
@@ -39,6 +39,9 @@ class ShoppingBasketAdapter(private val shoppingBasket: ArrayList<Product>) : Re
             builder.setPositiveButton("OK") { dialog, which ->
                 shoppingBasket.remove(product)
                 notifyItemRemoved(position)
+                if (shoppingBasket.isEmpty()){
+                    empty_message.visibility = View.VISIBLE
+                }
             }
             builder.setNegativeButton("Cancel") { dialog, which -> }
             builder.show()

@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +32,7 @@ class WelcomeActivity : AppCompatActivity() {
     val shoppingBasketView by lazy { findViewById<RecyclerView>(R.id.welcome_rv_shopping_basket) }
     val btAddProduct by lazy { findViewById<Button>(R.id.welcome_bt_add_product) }
     val btCheckout by lazy { findViewById<Button>(R.id.welcome_bt_checkout) }
+    val empty_message by lazy { findViewById<TextView>(R.id.welcome_tv_empty) }
 
     val session by lazy{ Session(this) }
 
@@ -38,7 +40,11 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
 
-        shoppingBasketView.adapter = ShoppingBasketAdapter(shoppingBasket)
+
+
+        empty_message.visibility = TextView.VISIBLE
+
+        shoppingBasketView.adapter = ShoppingBasketAdapter(shoppingBasket, empty_message)
         shoppingBasketView.layoutManager = LinearLayoutManager(this)
 
         btAddProduct.setOnClickListener { scan(this) }
@@ -117,14 +123,20 @@ class WelcomeActivity : AppCompatActivity() {
                     var result = product.split(",")
 
                     try{
-                        shoppingBasket.add(
-                            Product(
-                                UUID.fromString(result[0]),
-                                result[1],
-                                result[2].toDouble()
-                            )
-                        )
+                        val newProduct = Product(UUID.fromString(result[0]), result[1], result[2].toDouble())
+
+                        //check if product already in shopping basket, no matter the quantity
+                        for (product in shoppingBasket){
+                            if (product.id == newProduct.id){
+                                product.quantity += newProduct.quantity
+                                shoppingBasketView.adapter?.notifyItemChanged(shoppingBasket.indexOf(product))
+                                return
+                            }
+                        }
+                        shoppingBasket.add(newProduct)
                         shoppingBasketView.adapter?.notifyItemInserted(shoppingBasket.size - 1)
+                        empty_message.visibility = TextView.GONE
+
                     }
                     catch (e: Exception){
                         Toast.makeText(this, "Invalid QR code", Toast.LENGTH_SHORT).show()
