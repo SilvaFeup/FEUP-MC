@@ -2,6 +2,7 @@ package fr.kodo.myapplication.controller
 
 import android.app.AlertDialog
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fr.kodo.myapplication.R
 import fr.kodo.myapplication.model.Product
+import java.text.DecimalFormat
 
 class ShoppingBasketAdapter(private val shoppingBasket: ArrayList<Product>) : RecyclerView.Adapter<ShoppingBasketViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingBasketViewHolder {
@@ -26,7 +28,10 @@ class ShoppingBasketAdapter(private val shoppingBasket: ArrayList<Product>) : Re
         holder.name.text = product.name
         holder.price.text = product.price.toString() + "€"
         holder.quantity.setText(product.quantity.toString())
-        holder.totalPrice.text = (product.price * product.quantity).toString() + "€"
+
+        val df = DecimalFormat("#.##")
+        holder.totalPrice.text = df.format(product.price * product.quantity).toString() + "€"
+
         holder.deleteBt.setOnClickListener {
             val builder = AlertDialog.Builder(holder.itemView.context)
             builder.setTitle("Delete product")
@@ -41,7 +46,7 @@ class ShoppingBasketAdapter(private val shoppingBasket: ArrayList<Product>) : Re
         holder.quantity.setOnKeyListener { _, _, _ ->
             if (holder.quantity.text.toString() != "") {
                 product.quantity = holder.quantity.text.toString().toInt()
-                holder.totalPrice.text = (product.price * product.quantity).toString()
+                holder.totalPrice.text = df.format(product.price * product.quantity).toString() + "€"
             }
             false
         }

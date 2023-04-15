@@ -69,6 +69,10 @@ class WelcomeActivity : AppCompatActivity() {
 
 
     private fun checkout() {
+        if (shoppingBasket.isEmpty()){
+            Toast.makeText(this, "Your shopping basket is empty", Toast.LENGTH_SHORT).show()
+            return
+        }
         var totalPrice = 0.0
         for (product in shoppingBasket) {
             totalPrice += product.price * product.quantity
@@ -112,14 +116,19 @@ class WelcomeActivity : AppCompatActivity() {
 
                     var result = product.split(",")
 
-                    shoppingBasket.add(
-                        Product(
-                            UUID.fromString(result[0]),
-                            result[1],
-                            result[2].toDouble()
+                    try{
+                        shoppingBasket.add(
+                            Product(
+                                UUID.fromString(result[0]),
+                                result[1],
+                                result[2].toDouble()
+                            )
                         )
-                    )
-                    shoppingBasketView.adapter?.notifyItemInserted(shoppingBasket.size - 1)
+                        shoppingBasketView.adapter?.notifyItemInserted(shoppingBasket.size - 1)
+                    }
+                    catch (e: Exception){
+                        Toast.makeText(this, "Invalid QR code", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
