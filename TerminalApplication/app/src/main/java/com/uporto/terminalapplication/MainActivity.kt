@@ -59,11 +59,13 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == RESULT_OK){
                 makeRequest(data?.getStringExtra("SCAN_RESULT")?:"")
             }
+            else Toast.makeText(this@MainActivity,"error while reading QR-code",Toast.LENGTH_LONG).show()
         }
     }
 
     private fun makeRequest(str: String){
         if (str.isEmpty()){
+            Toast.makeText(this@MainActivity,"empty basket",Toast.LENGTH_LONG).show()
             throw Exception("empty basket!")
         }
         Log.e("basket", str)
@@ -72,7 +74,8 @@ class MainActivity : AppCompatActivity() {
         //the QR-code must contain at least the userId, the bool for discount and the voucherId
         if (array.size < 3) {
             Log.e("Error basket size", "the QR-code transmit less than 3 information!\n information are :\t $str")
-            return;
+            Toast.makeText(this@MainActivity,"the QR-code transmit less than 3 information!",Toast.LENGTH_LONG).show()
+            return
         }
 
         var idProductList : ArrayList<UUID> = ArrayList()
@@ -102,11 +105,12 @@ class MainActivity : AppCompatActivity() {
             }
             else{
                 intent.putExtra("valid",false)
-                Toast.makeText(this@MainActivity,response[2],Toast.LENGTH_LONG).show()
+                Toast.makeText(this@MainActivity,response[response.size-1],Toast.LENGTH_LONG).show()
             }
                 startActivity(intent)
             }
             catch (e: Exception){
+                Toast.makeText(this@MainActivity, "An error occurred :"+e.message,Toast.LENGTH_LONG).show()
                 Log.e("Error", e.stackTraceToString())
             }
         }
