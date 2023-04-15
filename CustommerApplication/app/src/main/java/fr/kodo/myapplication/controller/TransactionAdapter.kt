@@ -16,10 +16,7 @@ import fr.kodo.myapplication.model.Transaction
 
 class TransactionAdapter(private val transactions: MutableList<Transaction>) :
 
-
     RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.transaction_item, parent, false)
@@ -31,9 +28,13 @@ class TransactionAdapter(private val transactions: MutableList<Transaction>) :
         val transaction = transactions[position]
 
         // Bind the transaction data to the corresponding views in the layout
-        holder.totalAmount.text = "Total Amount: $${transaction.totalAmount}"
-        holder.voucherId.text = "Voucher ID: ${transaction.voucherId}"
-        holder.dateOrder.text = "Date Order: ${transaction.dateOrder}"
+        holder.totalAmount.text = "Total Amount: $${transaction.total_amount}"
+        if (transaction.voucher_id == -1) {
+            holder.voucherId.text = "Voucher ID: No voucher"
+        } else{
+            holder.voucherId.text = "Voucher ID: ${transaction.voucher_id}"
+        }
+        holder.dateOrder.text = "Date Order: ${transaction.date_order}"
     }
 
     override fun getItemCount() = transactions.size

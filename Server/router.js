@@ -279,23 +279,14 @@ router.get('/users/:uuid/transactions', async (ctx) => {
   try {
 
     //need to ger the user id from the uuid that comes with the path
-    const queryUserId = 'SELECT id FROM User WHERE uuid = ?';
-    const userId = await db.all(queryUserId, [uuid]);
+    const userId = await db.get('SELECT id FROM User WHERE uuid = ?', [uuid]);
 
     // retrieve transactions from the database using the user ID
-    const query = 'SELECT * FROM OrderInfo WHERE customer_id = ?';
-    const rows = await db.all(query, [userId]);
-    const transactions = rows.map((row) => ({
-      id: row.id,
-      totalAmount: row.total_amount,
-      customerId: row.customer_id,
-      voucherId: row.voucher_id,
-      date: row.date_order,
-    }));
+    const rows = await db.all('SELECT * FROM OrderInfo WHERE customer_id = ?', userId.id);
 
     // return the transactions as JSON
-    console.log(transactions);
-    ctx.body = transactions;
+    console.log(rows);
+    ctx.body = {pastTransactionList: rows};
 
   } catch (err) {
 

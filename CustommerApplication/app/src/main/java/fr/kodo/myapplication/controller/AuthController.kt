@@ -90,8 +90,7 @@ class AuthController {
         return voucherInfo.voucherList
     }
 
-    suspend fun getTransactions(uuid: String): ArrayList<Transaction> {
+    suspend fun getTransactions(uuid: String): List<Transaction> {
         return apiInterface.getTransactionsByUserId(uuid).pastTransactionList
-
     }
 }

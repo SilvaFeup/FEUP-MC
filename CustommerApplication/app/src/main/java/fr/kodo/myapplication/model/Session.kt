@@ -28,8 +28,13 @@ class Session {
         editor.commit()
     }
 
-    fun getUserUUID(): String? {
-        return prefs.getString(KEY_USER_UUID, null)
+    fun getUserUUID(): String {
+        if (prefs.getString(KEY_USER_UUID, null) == null) {
+            throw Exception("User not logged in")
+        }
+        else{
+            return prefs.getString(KEY_USER_UUID, null)!!
+        }
     }
 
     fun getSupermarketPublicKey(): String? {
