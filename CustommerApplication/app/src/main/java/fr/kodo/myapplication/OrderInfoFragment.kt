@@ -16,11 +16,13 @@ import java.util.UUID
 
 
 class OrderInfoFragment: DialogFragment() {
+
+    val df = java.text.DecimalFormat("#.##")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view : View = inflater.inflate(R.layout.fragment_order_info, container, false)
 
-        view.findViewById<TextView>(R.id.orderinfo_total_price).text = arguments?.getDouble("totalPrice").toString()
+        view.findViewById<TextView>(R.id.orderinfo_total_price).text = df.format(arguments?.getDouble("totalPrice")).toString()
 
         view.findViewById<Button>(R.id.order_info_cancel_button).setOnClickListener {
             dismiss()

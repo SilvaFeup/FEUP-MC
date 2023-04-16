@@ -17,7 +17,8 @@
             android:layout_weight="1"
             android:text="Tomato"
             android:textSize="20dp"
-            android:layout_marginStart="5dp"/>
+            android:layout_marginStart="5dp"
+            android:textStyle="bold"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -58,7 +59,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="5.98 €" />
+            android:text="5.98 €"
+            android:textStyle="bold"/>
 
         <ImageButton
             android:id="@+id/shopping_basket_product_bt_delete"

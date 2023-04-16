@@ -45,7 +45,8 @@
             android:layout_gravity="center"
             android:backgroundTint="@color/blue"
             android:text="@string/add_product"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
 
         <Button
             android:id="@+id/welcome_bt_checkout"
@@ -54,7 +55,9 @@
             android:layout_gravity="center"
             android:backgroundTint="@color/blue"
             android:text="@string/checkout"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp"/>
 
     </LinearLayout>
 

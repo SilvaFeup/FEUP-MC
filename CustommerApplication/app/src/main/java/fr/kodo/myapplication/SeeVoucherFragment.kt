@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
@@ -45,10 +46,14 @@ class SeeVoucherFragment: DialogFragment() {
             withContext(Dispatchers.Main){
 
                 val recyclerView = view.findViewById<RecyclerView>(R.id.see_voucher_recycler_view)
-                if (voucherList != null) {
+                if (voucherList != null && voucherList!!.isNotEmpty()) {
                     recyclerView.adapter = SeeVoucherAdapter(voucherList!!)
+                    recyclerView.layoutManager = LinearLayoutManager(requireContext())
                 }
-                recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                else{
+                    view.findViewById<TextView>(R.id.see_voucher_tv_empty).visibility = TextView.VISIBLE
+                }
+
 
                 //progressBar.visibility = ProgressBar.GONE
                 //btnLogin.isEnabled = true

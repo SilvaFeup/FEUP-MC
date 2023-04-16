@@ -8,6 +8,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +20,7 @@ private const val ACTION_SCAN = "com.google.zxing.client.android.SCAN"
 
 class MainActivity : AppCompatActivity() {
     private val button by lazy{ findViewById<Button>(R.id.main_bt_checkout) }
+    private val progressBar by lazy{ findViewById<android.widget.ProgressBar>(R.id.main_pb_loading) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,8 +70,9 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity,"empty basket",Toast.LENGTH_LONG).show()
             throw Exception("empty basket!")
         }
+
         Log.e("basket", str)
-        var array = str.split(",")
+        val array = str.split(",")
 
         //the QR-code must contain at least the userId, the bool for discount and the voucherId
         if (array.size < 3) {
@@ -78,41 +81,48 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        var idProductList : ArrayList<UUID> = ArrayList()
-        var productQuantityList : ArrayList<Int> = ArrayList()
-        var userId = UUID.fromString(array[array.size-3])
-        var useAccumulatedDiscount = array[array.size-2].toFloat()
-        var voucherId = array[array.size-1].toInt()
+        try {
+            val idProductList: ArrayList<UUID> = ArrayList()
+            val productQuantityList: ArrayList<Int> = ArrayList()
+            val userId = UUID.fromString(array[array.size - 3])
+            val useAccumulatedDiscount = array[array.size - 2].toFloat()
+            val voucherId = array[array.size - 1].toInt()
 
-        for (i in 0..array.size-4 step 2){
-            idProductList.add(UUID.fromString(array[i]))
-            productQuantityList.add(array[i+1].toInt())
+            for (i in 0..array.size - 4 step 2) {
+                idProductList.add(UUID.fromString(array[i]))
+                productQuantityList.add(array[i + 1].toInt())
+            }
+
+            val checkoutController = CheckoutController()
+
+            progressBar.visibility = View.VISIBLE
+            button.isEnabled = false
+            lifecycleScope.launch{
+                    var response = checkoutController.checkout(idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId)
+
+                    var intent = Intent(this@MainActivity,result_activity::class.java)
+
+                    if(response[0].toDouble()>=0f){
+                        intent.putExtra("valid",true)
+                        intent.putExtra("total",response[0])
+                        intent.putExtra("discount",response[1])
+
+                        Log.e("total", response[0])
+                    }
+                    else{
+                        intent.putExtra("valid",false)
+                        Toast.makeText(this@MainActivity,response[response.size-1],Toast.LENGTH_LONG).show()
+                    }
+                    progressBar.visibility = View.INVISIBLE
+                    button.isEnabled = true
+                    startActivity(intent)
+                }
         }
-        val checkoutController = CheckoutController()
-
-        lifecycleScope.launch{
-            try {
-                var response = checkoutController.checkout(idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId)
-
-                var intent = Intent(this@MainActivity,result_activity::class.java)
-
-            if(response[0].toDouble()>=0f){
-                intent.putExtra("valid",true)
-                intent.putExtra("total",response[0])
-                intent.putExtra("discount",response[1])
-
-                Log.e("total", response[0])
-            }
-            else{
-                intent.putExtra("valid",false)
-                Toast.makeText(this@MainActivity,response[response.size-1],Toast.LENGTH_LONG).show()
-            }
-                startActivity(intent)
-            }
-            catch (e: Exception){
-                Toast.makeText(this@MainActivity, "An error occurred :"+e.message,Toast.LENGTH_LONG).show()
-                Log.e("Error", e.stackTraceToString())
-            }
+        catch (e: Exception){
+            progressBar.visibility = View.INVISIBLE
+            button.isEnabled = true
+            Toast.makeText(this@MainActivity, "An error occurred :"+e.message,Toast.LENGTH_LONG).show()
+            Log.e("Error", e.stackTraceToString())
         }
     }
 }

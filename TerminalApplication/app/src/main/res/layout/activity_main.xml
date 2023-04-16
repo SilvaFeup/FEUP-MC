@@ -20,11 +20,19 @@
         android:textStyle="bold"
         />
 
+    <ProgressBar
+        android:id="@+id/main_pb_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
+        android:visibility="invisible"/>
+
     <Button
         android:id="@+id/main_bt_checkout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="248dp"
+        android:layout_marginTop="148dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:padding="32dp"

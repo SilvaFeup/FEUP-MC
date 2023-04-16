@@ -152,7 +152,8 @@
                 android:text="Back"
                 android:backgroundTint="@color/blue"
                 android:textColor="@color/black"
-                android:layout_marginHorizontal="20dp" />
+                android:layout_marginHorizontal="20dp"
+                android:textStyle="bold"/>
 
             <Button
                 android:id="@+id/register_bt_register"
@@ -162,7 +163,8 @@
                 android:text="Register"
                 android:backgroundTint="@color/blue"
                 android:textColor="@color/black"
-                android:layout_marginHorizontal="20dp"/>
+                android:layout_marginHorizontal="20dp"
+                android:textStyle="bold"/>
 
         </LinearLayout>
 

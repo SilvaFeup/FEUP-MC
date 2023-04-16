@@ -53,7 +53,8 @@
             android:text="Login"
             android:layout_gravity="center"
             android:backgroundTint="@color/blue"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -76,7 +77,8 @@
                 android:layout_height="wrap_content"
                 android:text="Register"
                 android:backgroundTint="@color/blue"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:textStyle="bold"/>
         </LinearLayout>
 
 
