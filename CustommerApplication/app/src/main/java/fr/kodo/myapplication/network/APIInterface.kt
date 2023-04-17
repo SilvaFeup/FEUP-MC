@@ -1,4 +1,4 @@
-package fr.kodo.myapplication
+package fr.kodo.myapplication.network
 
 import fr.kodo.myapplication.network.*
 

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.kodo.myapplication.controller.AuthController
 import fr.kodo.myapplication.controller.TransactionAdapter
-import fr.kodo.myapplication.model.Session
+import fr.kodo.myapplication.controller.Session
 import fr.kodo.myapplication.model.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

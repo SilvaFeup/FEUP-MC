@@ -13,8 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.kodo.myapplication.controller.ShoppingBasketAdapter
 import fr.kodo.myapplication.model.Product
-import fr.kodo.myapplication.controller.scan
-import fr.kodo.myapplication.model.Session
+import fr.kodo.myapplication.controller.Session
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -39,7 +38,11 @@ class WelcomeActivity : AppCompatActivity() {
         shoppingBasketView.adapter = ShoppingBasketAdapter(shoppingBasket, emptyMessage)
         shoppingBasketView.layoutManager = LinearLayoutManager(this)
 
-        btAddProduct.setOnClickListener { scan(this) }
+        btAddProduct.setOnClickListener {
+            //scan(this)
+            shoppingBasket.add(Product(UUID.fromString("625a0656-d7b6-11ed-afa1-0242ac120002"), "Product0", 2.00))
+            shoppingBasketView.adapter?.notifyItemInserted(shoppingBasket.size - 1)
+        }
         btCheckout.setOnClickListener { checkout() }
     }
 
@@ -81,7 +84,7 @@ class WelcomeActivity : AppCompatActivity() {
             message += "${product.id},${product.quantity},"
         }
 
-        //Start OrderInfoFragment
+        //Start OrderInfoFragment with the context of the current activity
         val orderInfoFragment = OrderInfoFragment()
         orderInfoFragment.arguments = Bundle().apply {
             putString("message", message)

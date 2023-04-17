@@ -3,9 +3,8 @@ package fr.kodo.myapplication.controller
 
 import android.content.Context
 import android.util.Base64
-import fr.kodo.myapplication.APIInterface
+import fr.kodo.myapplication.network.APIInterface
 import fr.kodo.myapplication.crypto.KeyStoreUtils
-import fr.kodo.myapplication.model.Session
 import fr.kodo.myapplication.model.Voucher
 import fr.kodo.myapplication.model.Transaction
 import fr.kodo.myapplication.network.LoginRequest
@@ -51,9 +50,9 @@ class AuthController {
 
         KeyStoreUtils.generateKeyPair(userName)
 
-        val publicKey = KeyStoreUtils.getKeyPair(userName)
+        val publicKey = KeyStoreUtils.getKeyPair(userName)?.public
 
-        val registerRequest = RegisterRequest(userName,passwordAuthentication,name,card_number,card_holder_name, expiration_month.toInt(),expiration_year.toInt(), security_code, Base64.encodeToString(publicKey?.public?.encoded, Base64.DEFAULT))
+        val registerRequest = RegisterRequest(userName,passwordAuthentication,name,card_number,card_holder_name, expiration_month.toInt(),expiration_year.toInt(), security_code, Base64.encodeToString(publicKey?.encoded, Base64.DEFAULT))
 
         val registerInfo = apiInterface.register(registerRequest)
 
@@ -79,7 +78,7 @@ class AuthController {
         }
 
         if(loginInfo.error == 0){
-            session.createSession(loginInfo.userId, loginInfo.supermarket_publickey)
+            session.createSession(userName ,loginInfo.userId, loginInfo.supermarket_publickey)
         }
     }
 

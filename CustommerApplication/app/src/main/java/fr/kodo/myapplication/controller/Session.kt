@@ -1,7 +1,9 @@
-package fr.kodo.myapplication.model
+package fr.kodo.myapplication.controller
 
 import android.content.Context
 import android.content.SharedPreferences
+
+const val ANDROID_KEY_STORE = "AndroidKeyStore"
 
 class Session(Context: Context) {
     private var prefs: SharedPreferences
@@ -16,11 +18,13 @@ class Session(Context: Context) {
 
     companion object {
         const val PREFS_NAME = "CustomerApplicationUserSession"
+        const val KEY_USERNAME = "username"
         const val KEY_USER_UUID = "userUUID"
         const val KEY_SUPERMARKET_PUBLIC_KEY = "SupermarketPublicKey"
     }
 
-    fun createSession(userUUID: String, supermarketPublicKey: String) {
+    fun createSession(username: String, userUUID: String, supermarketPublicKey: String) {
+        editor.putString(KEY_USERNAME, username)
         editor.putString(KEY_USER_UUID, userUUID)
         editor.putString(KEY_SUPERMARKET_PUBLIC_KEY, supermarketPublicKey)
         editor.commit()
@@ -29,9 +33,16 @@ class Session(Context: Context) {
     fun getUserUUID(): String {
         if (prefs.getString(KEY_USER_UUID, null) == null) {
             throw Exception("User not logged in")
-        }
-        else{
+        } else {
             return prefs.getString(KEY_USER_UUID, null)!!
+        }
+    }
+
+    fun getUsername(): String {
+        if (prefs.getString(KEY_USERNAME, null) == null) {
+            throw Exception("User not logged in")
+        } else {
+            return prefs.getString(KEY_USERNAME, null)!!
         }
     }
 
@@ -43,6 +54,4 @@ class Session(Context: Context) {
         editor.clear()
         editor.commit()
     }
-
-
 }
