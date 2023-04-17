@@ -31,8 +31,6 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
 
-
-
         emptyMessage.visibility = TextView.VISIBLE
 
         shoppingBasketView.adapter = ShoppingBasketAdapter(shoppingBasket, emptyMessage)
