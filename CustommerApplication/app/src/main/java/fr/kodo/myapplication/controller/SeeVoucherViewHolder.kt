@@ -6,5 +6,5 @@ import androidx.recyclerview.widget.RecyclerView
 import fr.kodo.myapplication.R
 
 class SeeVoucherViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-    val id = itemView.findViewById<TextView>(R.id.voucher_item_tv_voucher_id)
+    val id:TextView = itemView.findViewById(R.id.voucher_item_tv_voucher_id)
 }

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import fr.kodo.myapplication.R
 import fr.kodo.myapplication.model.Voucher
 
-class SeeVoucherAdapter(val voucherList: List<Voucher>): RecyclerView.Adapter<SeeVoucherViewHolder>() {
+class SeeVoucherAdapter(private val voucherList: List<Voucher>): RecyclerView.Adapter<SeeVoucherViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SeeVoucherViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.voucher_item, parent, false)
         return SeeVoucherViewHolder(itemView)

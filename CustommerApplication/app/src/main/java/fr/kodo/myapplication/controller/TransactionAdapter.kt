@@ -1,7 +1,5 @@
 package fr.kodo.myapplication.controller
 
-import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,13 +26,17 @@ class TransactionAdapter(private val transactions: MutableList<Transaction>) :
         val transaction = transactions[position]
 
         // Bind the transaction data to the corresponding views in the layout
-        holder.totalAmount.text = "Total Amount: $${transaction.total_amount}"
-        if (transaction.voucher_id == -1) {
-            holder.voucherId.text = "Voucher ID: No voucher"
+        val totalAmount = "Total Amount: ${transaction.total_amount}€"
+        holder.totalAmount.text = totalAmount
+        val voucherId: String = if (transaction.voucher_id == -1) {
+            "Voucher ID: No voucher"
         } else{
-            holder.voucherId.text = "Voucher ID: ${transaction.voucher_id}"
+            "Voucher ID: ${transaction.voucher_id}"
+
         }
-        holder.dateOrder.text = "Date Order: ${transaction.date_order}"
+        holder.voucherId.text = voucherId
+        val dateOrder = "Date Order: ${transaction.date_order}"
+        holder.dateOrder.text = dateOrder
     }
 
     override fun getItemCount() = transactions.size

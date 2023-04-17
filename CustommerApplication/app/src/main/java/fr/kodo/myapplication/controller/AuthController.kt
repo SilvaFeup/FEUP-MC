@@ -3,7 +3,6 @@ package fr.kodo.myapplication.controller
 
 import android.content.Context
 import android.util.Base64
-import android.util.Log
 import fr.kodo.myapplication.APIInterface
 import fr.kodo.myapplication.model.Session
 import fr.kodo.myapplication.model.Voucher
@@ -18,12 +17,13 @@ import java.util.UUID
 class AuthController {
 
 
-    val apiInterface: APIInterface by lazy {
+    private val apiInterface: APIInterface by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.1.81:3000/")//Axel
+            //.baseUrl("http://192.168.1.81:3000/")//Axel
             //.baseUrl("http://10.0.2.2:3000/")//emulator
             //.baseUrl("http://192.168.1.80:3000/")//aurélien
             //.baseUrl("http://192.168.250.163:3000/")//aurélien with his own connexion
+            .baseUrl("http://192.168.225.102:3000/")//Axel with his own connexion
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(APIInterface::class.java)
@@ -48,11 +48,11 @@ class AuthController {
             throw Exception("Passwords do not match")
         }
 
-        KeyStoreUtils.generateKeyPair(userName);
+        KeyStoreUtils.generateKeyPair(userName)
 
-        val public_key = KeyStoreUtils.getKeyPair(userName);
+        val publicKey = KeyStoreUtils.getKeyPair(userName)
 
-        val registerRequest = RegisterRequest(userName,passwordAuthentication,name,card_number,card_holder_name, expiration_month.toInt(),expiration_year.toInt(), security_code, Base64.encodeToString(public_key?.public?.encoded, Base64.DEFAULT));
+        val registerRequest = RegisterRequest(userName,passwordAuthentication,name,card_number,card_holder_name, expiration_month.toInt(),expiration_year.toInt(), security_code, Base64.encodeToString(publicKey?.public?.encoded, Base64.DEFAULT))
 
         val registerInfo = apiInterface.register(registerRequest)
 

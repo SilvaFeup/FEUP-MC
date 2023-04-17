@@ -6,13 +6,12 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
-import fr.kodo.myapplication.R
 import java.util.*
 
 private const val SIZE = 600
 private const val ISO_SET = "ISO-8859-1"
 
-fun Generate_QR_Code(message: String): Bitmap?{
+fun generateQRCode(message: String): Bitmap?{
 
     val result: BitMatrix
     val hints = Hashtable<EncodeHintType, String>().apply { put(EncodeHintType.CHARACTER_SET, ISO_SET) }
