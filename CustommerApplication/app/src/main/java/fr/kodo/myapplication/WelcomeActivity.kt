@@ -7,34 +7,26 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import fr.kodo.myapplication.controller.AuthController
 import fr.kodo.myapplication.controller.ShoppingBasketAdapter
 import fr.kodo.myapplication.model.Product
 import fr.kodo.myapplication.controller.scan
 import fr.kodo.myapplication.model.Session
-import fr.kodo.myapplication.model.Voucher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
 
-private const val ACTION_SCAN = "com.google.zxing.client.android.SCAN"
 class WelcomeActivity : AppCompatActivity() {
 
-    var shoppingBasket = ArrayList<Product>()
-    val shoppingBasketView by lazy { findViewById<RecyclerView>(R.id.welcome_rv_shopping_basket) }
-    val btAddProduct by lazy { findViewById<Button>(R.id.welcome_bt_add_product) }
-    val btCheckout by lazy { findViewById<Button>(R.id.welcome_bt_checkout) }
-    val empty_message by lazy { findViewById<TextView>(R.id.welcome_tv_empty) }
+    private var shoppingBasket = ArrayList<Product>()
+    private val shoppingBasketView by lazy { findViewById<RecyclerView>(R.id.welcome_rv_shopping_basket) }
+    private val btAddProduct by lazy { findViewById<Button>(R.id.welcome_bt_add_product) }
+    private val btCheckout by lazy { findViewById<Button>(R.id.welcome_bt_checkout) }
+    private val emptyMessage by lazy { findViewById<TextView>(R.id.welcome_tv_empty) }
 
-    val session by lazy{ Session(this) }
+    private val session by lazy{ Session(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +34,9 @@ class WelcomeActivity : AppCompatActivity() {
 
 
 
-        empty_message.visibility = TextView.VISIBLE
+        emptyMessage.visibility = TextView.VISIBLE
 
-        shoppingBasketView.adapter = ShoppingBasketAdapter(shoppingBasket, empty_message)
+        shoppingBasketView.adapter = ShoppingBasketAdapter(shoppingBasket, emptyMessage)
         shoppingBasketView.layoutManager = LinearLayoutManager(this)
 
         btAddProduct.setOnClickListener { scan(this) }
@@ -98,7 +90,7 @@ class WelcomeActivity : AppCompatActivity() {
         }
         orderInfoFragment.show(supportFragmentManager, "OrderInfoFragment")
 
-        supportFragmentManager.setFragmentResultListener("checkout", this) { key, bundle ->
+        supportFragmentManager.setFragmentResultListener("checkout", this) { _, bundle ->
             val result = bundle.getString("checkout")
             if (result == "success") {
                 val nbProducts = shoppingBasket.size
@@ -116,26 +108,26 @@ class WelcomeActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 0){
-            if (resultCode == AppCompatActivity.RESULT_OK){
-                var product =data?.getStringExtra("SCAN_RESULT")?:""
+            if (resultCode == RESULT_OK){
+                val product =data?.getStringExtra("SCAN_RESULT")?:""
                 if (product != "") {
 
-                    var result = product.split(",")
+                    val result = product.split(",")
 
                     try{
                         val newProduct = Product(UUID.fromString(result[0]), result[1], result[2].toDouble())
 
                         //check if product already in shopping basket, no matter the quantity
-                        for (product in shoppingBasket){
-                            if (product.id == newProduct.id){
-                                product.quantity += newProduct.quantity
-                                shoppingBasketView.adapter?.notifyItemChanged(shoppingBasket.indexOf(product))
+                        for (item in shoppingBasket){
+                            if (item.id == newProduct.id){
+                                item.quantity += newProduct.quantity
+                                shoppingBasketView.adapter?.notifyItemChanged(shoppingBasket.indexOf(item))
                                 return
                             }
                         }
                         shoppingBasket.add(newProduct)
                         shoppingBasketView.adapter?.notifyItemInserted(shoppingBasket.size - 1)
-                        empty_message.visibility = TextView.GONE
+                        emptyMessage.visibility = TextView.GONE
 
                     }
                     catch (e: Exception){

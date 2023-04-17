@@ -3,21 +3,19 @@ package fr.kodo.myapplication.model
 import android.content.Context
 import android.content.SharedPreferences
 
-class Session {
-    lateinit var prefs: SharedPreferences
-    lateinit var editor: SharedPreferences.Editor
-    lateinit var context: Context
+class Session(Context: Context) {
+    private var prefs: SharedPreferences
+    private var editor: SharedPreferences.Editor
 
-    var PRIVATE_MODE = 0
+    private var PRIVATE_MODE = 0
 
-    constructor(Context: Context) {
-        this.context = Context
+    init {
         prefs = Context.getSharedPreferences(PREFS_NAME, PRIVATE_MODE)
         editor = prefs.edit()
     }
 
     companion object {
-        const val PREFS_NAME = "CustommerApplicationUserSession"
+        const val PREFS_NAME = "CustomerApplicationUserSession"
         const val KEY_USER_UUID = "userUUID"
         const val KEY_SUPERMARKET_PUBLIC_KEY = "SupermarketPublicKey"
     }
@@ -44,10 +42,6 @@ class Session {
     fun logout() {
         editor.clear()
         editor.commit()
-    }
-
-    fun isLoggedIn(): Boolean {
-        return prefs.getString(KEY_USER_UUID, null) != null
     }
 
 

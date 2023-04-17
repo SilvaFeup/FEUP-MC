@@ -9,8 +9,6 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import fr.kodo.myapplication.controller.AuthController
 import fr.kodo.myapplication.controller.TransactionAdapter
 import fr.kodo.myapplication.model.Session
@@ -18,13 +16,8 @@ import fr.kodo.myapplication.model.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.awaitResponse
-import retrofit2.converter.gson.GsonConverterFactory
 
 class PastTransactionActivity : AppCompatActivity() {
-
-    private lateinit var transactionList: List<Transaction>
 
     private val authController by lazy { AuthController() }
 
@@ -32,11 +25,11 @@ class PastTransactionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_past_transaction)
 
-        val backBtn = findViewById<Button>(R.id.past_transaction_bt_back).setOnClickListener{
+        findViewById<Button>(R.id.past_transaction_bt_back).setOnClickListener{
             finish()
         }
 
-        var recyclerView = findViewById<RecyclerView>(R.id.transaction_list)
+        var recyclerView: RecyclerView
 
         val uuid = Session(this@PastTransactionActivity).getUserUUID()
 

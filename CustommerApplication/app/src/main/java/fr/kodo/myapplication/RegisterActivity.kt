@@ -1,9 +1,7 @@
 package fr.kodo.myapplication
 
-import KeyStoreUtils
 import android.content.Intent
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -11,7 +9,6 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import fr.kodo.myapplication.controller.AuthController
-import java.net.PasswordAuthentication
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 
@@ -21,23 +18,23 @@ import kotlinx.coroutines.withContext
 
 
 class RegisterActivity : AppCompatActivity() {
-    val RegisterController = AuthController()
+    private val registerController = AuthController()
 
-    val edtName by lazy { findViewById<EditText>(R.id.register_edt_name) }
-    val edtNickname by lazy { findViewById<EditText>(R.id.register_edt_nickname) }
-    val edtPassword by lazy { findViewById<EditText>(R.id.register_edt_password) }
-    val edtConfirmPassword by lazy { findViewById<EditText>(R.id.register_edt_confirm_password) }
+    private val edtName by lazy { findViewById<EditText>(R.id.register_edt_name) }
+    private val edtNickname by lazy { findViewById<EditText>(R.id.register_edt_nickname) }
+    private val edtPassword by lazy { findViewById<EditText>(R.id.register_edt_password) }
+    private val edtConfirmPassword by lazy { findViewById<EditText>(R.id.register_edt_confirm_password) }
 
-    val edtCardNumber by lazy { findViewById<EditText>(R.id.register_edt_card_number) }
-    val edtCardHolderName by lazy { findViewById<EditText>(R.id.register_edt_card_holder_name) }
-    val edtCardExpirationMonth by lazy { findViewById<EditText>(R.id.register_edt_card_expiration_month) }
-    val edtCardExpirationYear by lazy { findViewById<EditText>(R.id.register_edt_card_expiration_year) }
-    val edtCardSecurityCode by lazy { findViewById<EditText>(R.id.register_edt_card_security_code) }
+    private val edtCardNumber by lazy { findViewById<EditText>(R.id.register_edt_card_number) }
+    private val edtCardHolderName by lazy { findViewById<EditText>(R.id.register_edt_card_holder_name) }
+    private val edtCardExpirationMonth by lazy { findViewById<EditText>(R.id.register_edt_card_expiration_month) }
+    private val edtCardExpirationYear by lazy { findViewById<EditText>(R.id.register_edt_card_expiration_year) }
+    private val edtCardSecurityCode by lazy { findViewById<EditText>(R.id.register_edt_card_security_code) }
 
-    val progressBar by lazy { findViewById<ProgressBar>(R.id.register_progress_bar) }
+    private val progressBar by lazy { findViewById<ProgressBar>(R.id.register_progress_bar) }
 
-    val btRegister by lazy { findViewById<Button>(R.id.register_bt_register) }
-    val btLogin by lazy { findViewById<Button>(R.id.register_bt_login) }
+    private val btRegister by lazy { findViewById<Button>(R.id.register_bt_register) }
+    private val btLogin by lazy { findViewById<Button>(R.id.register_bt_login) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,11 +61,11 @@ class RegisterActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    RegisterController.register(name,nickname, password, confirmPassword,
+                    registerController.register(name,nickname, password, confirmPassword,
                         cardNumber, cardHolderName, cardExpirationMonth,cardExpirationYear, cardCvvCode)
 
                 }catch (e: Exception) {
-                    Log.e("Erro: ", e.stackTraceToString())
+                    Log.e("RegisterActivity: ", e.stackTraceToString())
                     Toast.makeText(this@RegisterActivity, e.message, Toast.LENGTH_LONG).show()
                     progressBar.visibility = ProgressBar.GONE
                     btRegister.isEnabled = true

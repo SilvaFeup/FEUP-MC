@@ -1,11 +1,11 @@
+package fr.kodo.myapplication.crypto
+
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 
 import java.security.*
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
-import javax.crypto.KeyGenerator
-import javax.crypto.SecretKey
 
 class KeyStoreUtils {
 

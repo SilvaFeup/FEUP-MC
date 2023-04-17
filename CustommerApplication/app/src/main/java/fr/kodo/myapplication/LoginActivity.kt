@@ -10,7 +10,6 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import fr.kodo.myapplication.controller.AuthController
-import fr.kodo.myapplication.model.Session
 import kotlinx.coroutines.Dispatchers
 
 
@@ -18,16 +17,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
-    val authController = AuthController()
+    private val authController = AuthController()
 
-    val edtNickname by lazy { findViewById<EditText>(R.id.login_edt_nickname) }
-    val edtPassword by lazy { findViewById<EditText>(R.id.login_edt_password) }
-    val btnLogin by lazy { findViewById<Button>(R.id.login_bt_login) }
-    val btnRegister by lazy { findViewById<Button>(R.id.login_bt_register) }
+    private val edtNickname by lazy { findViewById<EditText>(R.id.login_edt_nickname) }
+    private val edtPassword by lazy { findViewById<EditText>(R.id.login_edt_password) }
+    private val btnLogin by lazy { findViewById<Button>(R.id.login_bt_login) }
+    private val btnRegister by lazy { findViewById<Button>(R.id.login_bt_register) }
 
-    val progressBar: ProgressBar by lazy { findViewById(R.id.login_progress_bar) }
+    private val progressBar: ProgressBar by lazy { findViewById(R.id.login_progress_bar) }
 
-    val session by lazy { Session(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -51,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    fun loginUser(userName:String,password: String) {
+    private fun loginUser(userName:String,password: String) {
 
         lifecycleScope.launch {
             try {

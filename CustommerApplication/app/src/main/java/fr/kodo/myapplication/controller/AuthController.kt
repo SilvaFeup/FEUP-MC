@@ -4,6 +4,7 @@ package fr.kodo.myapplication.controller
 import android.content.Context
 import android.util.Base64
 import fr.kodo.myapplication.APIInterface
+import fr.kodo.myapplication.crypto.KeyStoreUtils
 import fr.kodo.myapplication.model.Session
 import fr.kodo.myapplication.model.Voucher
 import fr.kodo.myapplication.model.Transaction

@@ -1,10 +1,6 @@
 package fr.kodo.myapplication
 
-import fr.kodo.myapplication.model.Transaction
 import fr.kodo.myapplication.network.*
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Response
 
 
 import retrofit2.http.Body
@@ -24,6 +20,6 @@ interface APIInterface {
     suspend fun voucher(@Body voucherRequest: VoucherRequest): VoucherResponse
 
     @GET("/users/{uuid}/transactions")
-    suspend fun getTransactionsByUserId(@Path("uuid") uuid: String): getPastTransactionResponse
+    suspend fun getTransactionsByUserId(@Path("uuid") uuid: String): GetPastTransactionResponse
 
 }
