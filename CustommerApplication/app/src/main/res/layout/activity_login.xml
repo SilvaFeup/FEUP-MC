@@ -2,41 +2,45 @@
 
 <ScrollView android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginHorizontal="5dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nickname"
+            android:text="@string/nickname"
             android:layout_marginTop="20dp"/>
 
         <EditText
             android:id="@+id/login_edt_nickname"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:hint="Enter your nickname"
-            android:layout_marginBottom="50dp"/>
+            android:hint="@string/enter_your_nickname"
+            android:layout_marginBottom="50dp"
+            android:autofillHints="username"
+            android:layout_marginHorizontal="5dp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Password" />
+            android:text="@string/password" />
 
         <EditText
             android:id="@+id/login_edt_password"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
+            android:layout_height="48dp"
             android:inputType="textPassword"
-            android:layout_marginBottom="50dp"/>
+            android:layout_marginBottom="50dp"
+            android:hint="@string/enter_your_password"
+            android:autofillHints="password"
+            android:layout_marginHorizontal="5dp"/>
 
         <ProgressBar
             android:id="@+id/login_progress_bar"
@@ -50,7 +54,7 @@
             android:id="@+id/login_bt_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Login"
+            android:text="@string/login"
             android:layout_gravity="center"
             android:backgroundTint="@color/blue"
             android:textColor="@color/black"
@@ -67,7 +71,7 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New user ?"
+                android:text="@string/new_user"
                 android:gravity="center"
                 android:layout_marginEnd="20dp"/>
 
@@ -75,7 +79,7 @@
                 android:id="@+id/login_bt_register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Register"
+                android:text="@string/register"
                 android:backgroundTint="@color/blue"
                 android:textColor="@color/black"
                 android:textStyle="bold"/>

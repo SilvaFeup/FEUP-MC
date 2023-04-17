@@ -19,7 +19,7 @@ class OrderInfoFragment: DialogFragment() {
         // Inflate the layout for this fragment
         val view : View = inflater.inflate(R.layout.fragment_order_info, container, false)
 
-        view.findViewById<TextView>(R.id.orderinfo_total_price).text = df.format(arguments?.getDouble("totalPrice")).toString()
+        view.findViewById<TextView>(R.id.order_info_total_price).text = df.format(arguments?.getDouble("totalPrice")).toString()
 
         view.findViewById<Button>(R.id.order_info_cancel_button).setOnClickListener {
             dismiss()

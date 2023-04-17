@@ -6,120 +6,134 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Name" />
+            android:text="@string/name" />
 
         <EditText
             android:id="@+id/register_edt_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter your name"
-            android:inputType="textPersonName" />
+            android:hint="@string/enter_your_name"
+            android:inputType="textPersonName"
+            android:autofillHints="name" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nickname" />
+            android:text="@string/nickname" />
 
         <EditText
             android:id="@+id/register_edt_nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter your Nickname"
-            android:inputType="textPersonName" />
+            android:hint="@string/enter_your_nickname"
+            android:inputType="textPersonName"
+            android:autofillHints="username" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Password" />
+            android:text="@string/password" />
 
         <EditText
             android:id="@+id/register_edt_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:autofillHints="password"
+            android:hint="@string/enter_your_password"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Confirm password" />
+            android:text="@string/confirm_password" />
 
         <EditText
             android:id="@+id/register_edt_confirm_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:autofillHints="password"
+            android:hint="@string/confirm_your_password"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center"
-            android:text="Payment information"
-            android:textSize="20dp" />
+            android:text="@string/payment_information"
+            android:textSize="20sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Card number" />
+            android:text="@string/card_number" />
 
         <EditText
             android:id="@+id/register_edt_card_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="number" />
+            android:inputType="number"
+            android:autofillHints="creditCardNumber"
+            android:hint="@string/enter_your_credit_card_number"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Card holder name" />
+            android:text="@string/card_holder_name" />
 
         <EditText
             android:id="@+id/register_edt_card_holder_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="text" />
+            android:inputType="text"
+            android:hint="@string/enter_your_card_number"
+            android:autofillHints="name" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Expiration month" />
+            android:text="@string/expiration_month" />
 
         <EditText
             android:id="@+id/register_edt_card_expiration_month"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="date" />
+            android:inputType="date"
+            android:autofillHints="creditCardExpirationMonth"
+            android:hint="@string/enter_your_card_expiration_month"/>
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Expiration year" />
+            android:text="@string/expiration_year" />
 
         <EditText
             android:id="@+id/register_edt_card_expiration_year"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="date" />
+            android:inputType="date"
+            android:autofillHints="creditCardExpirationYear"
+            android:hint="@string/enter_your_card_expiration_year"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Security code" />
+            android:text="@string/security_code" />
 
         <EditText
             android:id="@+id/register_edt_card_security_code"
@@ -127,7 +141,9 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="number"
-            android:maxLength="3" />
+            android:maxLength="3"
+            android:autofillHints="creditCardSecurityCode"
+            android:hint="@string/enter_your_card_security_code"/>
 
         <ProgressBar
             android:id="@+id/register_progress_bar"
@@ -149,22 +165,24 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginVertical="20dp"
-                android:text="Back"
+                android:text="@string/back"
                 android:backgroundTint="@color/blue"
                 android:textColor="@color/black"
                 android:layout_marginHorizontal="20dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                style="?android:attr/buttonBarButtonStyle" />
 
             <Button
                 android:id="@+id/register_bt_register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="20dp"
-                android:text="Register"
+                android:text="@string/register"
                 android:backgroundTint="@color/blue"
                 android:textColor="@color/black"
                 android:layout_marginHorizontal="20dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                style="?android:attr/buttonBarButtonStyle" />
 
         </LinearLayout>
 

@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your shopping basket is empty"
+        android:text="@string/your_shopping_basket_is_empty"
         android:id="@+id/welcome_tv_empty"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
