@@ -107,6 +107,8 @@ class MainActivity : AppCompatActivity() {
                 var isSignatureOk = checkoutController.verifySignature(userId, userSignature,content)
                 if(!isSignatureOk){
                     Toast.makeText(this@MainActivity, "Signature not ok",Toast.LENGTH_LONG).show()
+                    progressBar.visibility = View.INVISIBLE
+                    button.isEnabled = true
                     return@launch
                 }
                 //checkout on the server

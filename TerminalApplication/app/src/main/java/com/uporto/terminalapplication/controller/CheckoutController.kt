@@ -13,32 +13,34 @@ import java.security.Signature
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.time.LocalDate
-import java.util.*
+import android.util.Base64
+import java.util.UUID
 import kotlin.collections.ArrayList
 
 class CheckoutController() {
     val apiInterface: APIInterface by lazy {
         Retrofit.Builder()
-            //.baseUrl("http://192.168.1.81:3000/")//Axel
+            .baseUrl("http://192.168.1.81:3000/")//Axel
             //.baseUrl("http://192.168.1.80:3000/")//aurélien
-            .baseUrl("http://192.168.83.163:3000/")//aurélien with his own connexion
+            //.baseUrl("http://192.168.83.163:3000/")//aurélien with his own connexion
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(APIInterface::class.java)
     }
 
-    suspend fun verifySignature(uuid: UUID, userSignature : String,message : String): Boolean{
+    suspend fun verifySignature(uuid: UUID, userSignature : String, message : String): Boolean{
         val keysRequest = KeysRequest(uuid)
         val response = apiInterface.verifySignature(keysRequest)
         var verified = false
 
         if (response.message.contentEquals("Response find")){
+            Log.e("CheckoutController", response.pubKey)
             val pubKey = getPublicKeyFromString(response.pubKey)
 
             verified = Signature.getInstance("SHA256WithRSA").run {
                 initVerify(pubKey)
                 update(message.toByteArray())
-                verify(userSignature.toByteArray())
+                verify(Base64.decode(userSignature, Base64.DEFAULT))
             }
         }
         return verified
@@ -87,9 +89,10 @@ class CheckoutController() {
         cleanPublicKey =
             cleanPublicKey.replace("-----END PUBLIC KEY-----", "")
         cleanPublicKey = cleanPublicKey.replace("\n", "")
+        Log.e("CheckoutController/getPublicKeyFromString", cleanPublicKey)
         val keyStore = KeyStore.getInstance("AndroidKeyStore")
         keyStore.load(null)
-        val encoded = Base64.getDecoder().decode(cleanPublicKey)
+        val encoded = Base64.decode(cleanPublicKey, Base64.DEFAULT)
         val keySpec = X509EncodedKeySpec(encoded)
         val keyFactory = KeyFactory.getInstance("RSA")
         return keyFactory.generatePublic(keySpec)

@@ -1,6 +1,7 @@
 package fr.kodo.myapplication
 
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.fragment.app.DialogFragment
 import fr.kodo.myapplication.controller.Session
 import fr.kodo.myapplication.crypto.KeyStoreUtils
 import java.security.Signature
+import kotlin.math.sign
 
 
 class OrderInfoFragment: DialogFragment() {
@@ -62,8 +64,19 @@ class OrderInfoFragment: DialogFragment() {
                     sign()
                 }
 
+                /*
+                val strSignature = Base64.encodeToString(signature, Base64.DEFAULT)
+                Log.e("signature",strSignature)
+
+                val verify = Signature.getInstance("SHA256withRSA").run {
+                    initVerify(KeyStoreUtils.getKeyPair(session.getUsername())?.public)
+                    update(newMessage.toByteArray())
+                    verify(Base64.decode(strSignature, Base64.DEFAULT))
+                }
+                Log.e("verify",verify.toString())*/
+
                 //convert the signature to a string
-                val signatureString = signature.joinToString("") { "%02x".format(it) }
+                val signatureString = Base64.encodeToString(signature, Base64.DEFAULT)
 
                 //add the signature to the message
                 val newMessageWithSignature = "$newMessage,$signatureString"
