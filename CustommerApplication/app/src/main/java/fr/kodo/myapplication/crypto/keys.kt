@@ -3,7 +3,8 @@ package fr.kodo.myapplication.crypto
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Log
-import fr.kodo.myapplication.controller.ANDROID_KEY_STORE
+import fr.kodo.myapplication.model.ANDROID_KEY_STORE
+import fr.kodo.myapplication.model.KEY_SIZE
 
 import java.security.*
 import java.security.spec.X509EncodedKeySpec
@@ -12,7 +13,6 @@ import java.util.*
 
 class KeyStoreUtils {
     companion object {
-        private const val KEY_SIZE = 512
 
         fun generateKeyPair(key_alias : String) {
             try {
@@ -54,6 +54,20 @@ class KeyStoreUtils {
             } else {
                 null
             }
+        }
+
+        fun getPublicKeyFromString(supermarketPublicKey: String): PublicKey {
+            var cleanSupermarketPublicKey =
+                supermarketPublicKey.replace("-----BEGIN PUBLIC KEY-----\n", "")
+            cleanSupermarketPublicKey =
+                cleanSupermarketPublicKey.replace("-----END PUBLIC KEY-----", "")
+            cleanSupermarketPublicKey = cleanSupermarketPublicKey.replace("\n", "")
+            val keyStore = KeyStore.getInstance(ANDROID_KEY_STORE)
+            keyStore.load(null)
+            val encoded = Base64.getDecoder().decode(cleanSupermarketPublicKey)
+            val keySpec = X509EncodedKeySpec(encoded)
+            val keyFactory = KeyFactory.getInstance("RSA")
+            return keyFactory.generatePublic(keySpec)
         }
     }
 }

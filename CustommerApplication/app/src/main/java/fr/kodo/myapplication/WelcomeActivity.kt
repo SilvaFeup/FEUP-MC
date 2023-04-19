@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import fr.kodo.myapplication.controller.ShoppingBasketAdapter
 import fr.kodo.myapplication.model.Product
 import fr.kodo.myapplication.controller.Session
+import fr.kodo.myapplication.controller.scan
 import java.util.*
+import javax.crypto.Cipher
 import kotlin.collections.ArrayList
 
 class WelcomeActivity : AppCompatActivity() {
@@ -37,9 +39,7 @@ class WelcomeActivity : AppCompatActivity() {
         shoppingBasketView.layoutManager = LinearLayoutManager(this)
 
         btAddProduct.setOnClickListener {
-            //scan(this)
-            shoppingBasket.add(Product(UUID.fromString("625a0656-d7b6-11ed-afa1-0242ac120002"), "Product0", 2.00))
-            shoppingBasketView.adapter?.notifyItemInserted(shoppingBasket.size - 1)
+            scan(this)
         }
         btCheckout.setOnClickListener { checkout() }
     }
@@ -112,8 +112,19 @@ class WelcomeActivity : AppCompatActivity() {
             if (resultCode == RESULT_OK){
                 val product =data?.getStringExtra("SCAN_RESULT")?:""
                 if (product != "") {
+                    var decryptedProduct = ""
+                    try{
+                        //decrypt product using supermarket's public key
+                        val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
+                        cipher.init(Cipher.DECRYPT_MODE, session.getSupermarketPublicKey())
+                        decryptedProduct = String(cipher.doFinal(Base64.getDecoder().decode(product)))
+                        Log.e("WelcomeActivity", decryptedProduct)
+                    }
+                    catch (e: Exception){
+                        Log.e("WelcomeActivity", e.stackTraceToString())
+                    }
 
-                    val result = product.split(",")
+                    val result = decryptedProduct.split(",")
 
                     try{
                         val newProduct = Product(UUID.fromString(result[0]), result[1], result[2].toDouble())
