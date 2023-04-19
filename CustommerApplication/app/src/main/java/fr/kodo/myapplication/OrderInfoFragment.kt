@@ -54,9 +54,11 @@ class OrderInfoFragment: DialogFragment() {
                     voucherId = "0"
                 }
                 val newMessage = "$message$userUUID,$useAccumulatedDiscountInt,$voucherId"
+                Log.e("message",newMessage)
 
                 //generate the signature
                 val privateKey = KeyStoreUtils.getKeyPair(session.getUsername())?.private
+
                 val signature = Signature.getInstance("SHA256withRSA").run {
                     initSign(privateKey)
                     update(newMessage.toByteArray())
@@ -74,7 +76,7 @@ class OrderInfoFragment: DialogFragment() {
                 //Start CheckoutQRCodeFragment
                 val checkoutQRCodeFragment = CheckoutQRCodeFragment()
                 checkoutQRCodeFragment.arguments = Bundle().apply {
-                    putString("message", newMessage)
+                    putString("message", newMessageWithSignature)
                 }
 
                 checkoutQRCodeFragment.show(parentFragmentManager, "CheckoutQRCodeFragment")

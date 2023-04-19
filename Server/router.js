@@ -304,4 +304,27 @@ router.get('/users/:uuid/transactions', async (ctx) => {
   }
 });
 
+router.post('/verifySignature', async (ctx,next) => {
+  try{
+    const db = await init();
+    const {uuid} = ctx.request.body
+  
+    var userKey = await db.get("SELECT * FROM User WHERE uuid =?",uuid)
+
+    if (!userKey){
+      ctx.body = {error: "Failed to find key"}
+    }
+    else{
+      ctx.status = 200
+      ctx.body = {message: "Response find",pubKey: userKey.public_key}
+    }
+  }
+  catch (err) {
+    console.error(err.stack)
+    ctx.status = 500
+    ctx.body = { error: 'Failed to find key'}
+  }
+
+});
+
 module.exports = router;

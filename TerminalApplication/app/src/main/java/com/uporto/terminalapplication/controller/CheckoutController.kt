@@ -1,24 +1,47 @@
 package com.uporto.terminalapplication.controller
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import com.uporto.terminalapplication.APIInterface
 import com.uporto.terminalapplication.network.CheckoutRequest
+import com.uporto.terminalapplication.network.KeysRequest
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.KeyFactory
+import java.security.KeyStore
+import java.security.PublicKey
+import java.security.Signature
+import java.security.interfaces.RSAPublicKey
+import java.security.spec.X509EncodedKeySpec
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
+import kotlin.collections.ArrayList
 
 class CheckoutController() {
     val apiInterface: APIInterface by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.1.81:3000/")//Axel
+            //.baseUrl("http://192.168.1.81:3000/")//Axel
             //.baseUrl("http://192.168.1.80:3000/")//aurélien
-            //.baseUrl("http://192.168.248.163:3000/")//aurélien with his own connexion
+            .baseUrl("http://192.168.83.163:3000/")//aurélien with his own connexion
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(APIInterface::class.java)
+    }
+
+    suspend fun verifySignature(uuid: UUID, userSignature : String,message : String): Boolean{
+        val keysRequest = KeysRequest(uuid)
+        val response = apiInterface.verifySignature(keysRequest)
+        var verified = false
+
+        if (response.message.contentEquals("Response find")){
+            val pubKey = getPublicKeyFromString(response.pubKey)
+
+            verified = Signature.getInstance("SHA256WithRSA").run {
+                initVerify(pubKey)
+                update(message.toByteArray())
+                verify(userSignature.toByteArray())
+            }
+        }
+        return verified
     }
 
     suspend fun checkout(
@@ -42,9 +65,7 @@ class CheckoutController() {
             voucherId,
             date.toString()
         )
-        Log.e("date",date.toString())
         val checkoutInfo = apiInterface.checkout(checkoutRequest)
-        Log.e("Checkout info: ", checkoutInfo.message)
 
         var result = ArrayList<String>()
         if (checkoutInfo.message.contentEquals("Checkout valid")) {
@@ -58,5 +79,19 @@ class CheckoutController() {
         }
 
         return result
+    }
+
+    fun getPublicKeyFromString(publicKey: String): PublicKey {
+        var cleanPublicKey =
+            publicKey.replace("-----BEGIN PUBLIC KEY-----\n", "")
+        cleanPublicKey =
+            cleanPublicKey.replace("-----END PUBLIC KEY-----", "")
+        cleanPublicKey = cleanPublicKey.replace("\n", "")
+        val keyStore = KeyStore.getInstance("AndroidKeyStore")
+        keyStore.load(null)
+        val encoded = Base64.getDecoder().decode(cleanPublicKey)
+        val keySpec = X509EncodedKeySpec(encoded)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        return keyFactory.generatePublic(keySpec)
     }
 }

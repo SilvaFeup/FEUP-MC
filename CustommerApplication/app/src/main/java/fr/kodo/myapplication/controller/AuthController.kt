@@ -3,6 +3,7 @@ package fr.kodo.myapplication.controller
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import fr.kodo.myapplication.network.APIInterface
 import fr.kodo.myapplication.crypto.KeyStoreUtils
 import fr.kodo.myapplication.model.Voucher
@@ -22,8 +23,8 @@ class AuthController {
             //.baseUrl("http://192.168.1.81:3000/")//Axel
             //.baseUrl("http://10.0.2.2:3000/")//emulator
             //.baseUrl("http://192.168.1.80:3000/")//aurélien
-            //.baseUrl("http://192.168.250.163:3000/")//aurélien with his own connexion
-            .baseUrl("http://192.168.225.102:3000/")//Axel with his own connexion
+            .baseUrl("http://192.168.83.163:3000/")//aurélien with his own connexion
+            //.baseUrl("http://192.168.225.102:3000/")//Axel with his own connexion
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(APIInterface::class.java)
@@ -52,7 +53,9 @@ class AuthController {
 
         val publicKey = KeyStoreUtils.getKeyPair(userName)?.public
 
-        val registerRequest = RegisterRequest(userName,passwordAuthentication,name,card_number,card_holder_name, expiration_month.toInt(),expiration_year.toInt(), security_code, Base64.encodeToString(publicKey?.encoded, Base64.DEFAULT))
+        var strKey = Base64.encodeToString(publicKey?.encoded, Base64.DEFAULT)
+        strKey = strKey.replace("\n","")
+        val registerRequest = RegisterRequest(userName,passwordAuthentication,name,card_number,card_holder_name, expiration_month.toInt(),expiration_year.toInt(), security_code, strKey)
 
         val registerInfo = apiInterface.register(registerRequest)
 

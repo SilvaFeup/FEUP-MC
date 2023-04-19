@@ -71,7 +71,6 @@ class MainActivity : AppCompatActivity() {
             throw Exception("empty basket!")
         }
 
-        Log.e("basket", str)
         val array = str.split(",")
 
         //the QR-code must contain at least the userId, the bool for discount and the voucherId
@@ -80,15 +79,17 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity,"the QR-code transmit less than 3 information!",Toast.LENGTH_LONG).show()
             return
         }
-
         try {
+            Log.e("QR-code",str)
+
             val idProductList: ArrayList<UUID> = ArrayList()
             val productQuantityList: ArrayList<Int> = ArrayList()
-            val userId = UUID.fromString(array[array.size - 3])
-            val useAccumulatedDiscount = array[array.size - 2].toFloat()
-            val voucherId = array[array.size - 1].toInt()
+            val userId = UUID.fromString(array[array.size - 4])
+            val useAccumulatedDiscount = array[array.size -3].toFloat()
+            val voucherId = array[array.size - 2].toInt()
+            val userSignature = array[array.size - 1]
 
-            for (i in 0..array.size - 4 step 2) {
+            for (i in 0..array.size - 5 step 2) {
                 idProductList.add(UUID.fromString(array[i]))
                 productQuantityList.add(array[i + 1].toInt())
             }
@@ -98,25 +99,36 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             button.isEnabled = false
             lifecycleScope.launch{
-                    var response = checkoutController.checkout(idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId)
 
-                    var intent = Intent(this@MainActivity,result_activity::class.java)
+                //verification of the signature
+                var content = array.dropLast(1).joinToString (",")
 
-                    if(response[0].toDouble()>=0f){
-                        intent.putExtra("valid",true)
-                        intent.putExtra("total",response[0])
-                        intent.putExtra("discount",response[1])
-
-                        Log.e("total", response[0])
-                    }
-                    else{
-                        intent.putExtra("valid",false)
-                        Toast.makeText(this@MainActivity,response[response.size-1],Toast.LENGTH_LONG).show()
-                    }
-                    progressBar.visibility = View.INVISIBLE
-                    button.isEnabled = true
-                    startActivity(intent)
+                Log.e("message",content)
+                var isSignatureOk = checkoutController.verifySignature(userId, userSignature,content)
+                if(!isSignatureOk){
+                    Toast.makeText(this@MainActivity, "Signature not ok",Toast.LENGTH_LONG).show()
+                    return@launch
                 }
+                //checkout on the server
+                var response = checkoutController.checkout(idProductList, productQuantityList, userId, useAccumulatedDiscount, voucherId)
+
+                var intent = Intent(this@MainActivity,result_activity::class.java)
+
+                if(response[0].toDouble()>=0f){
+                    intent.putExtra("valid",true)
+                    intent.putExtra("total",response[0])
+                    intent.putExtra("discount",response[1])
+
+                    Log.e("total", response[0])
+                }
+                else{
+                    intent.putExtra("valid",false)
+                    Toast.makeText(this@MainActivity,response[response.size-1],Toast.LENGTH_LONG).show()
+                }
+                progressBar.visibility = View.INVISIBLE
+                button.isEnabled = true
+                startActivity(intent)
+            }
         }
         catch (e: Exception){
             progressBar.visibility = View.INVISIBLE

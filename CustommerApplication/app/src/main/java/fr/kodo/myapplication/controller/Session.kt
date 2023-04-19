@@ -50,6 +50,7 @@ class Session(Context: Context) {
         return prefs.getString(KEY_SUPERMARKET_PUBLIC_KEY, null)
     }
 
+
     fun logout() {
         editor.clear()
         editor.commit()
