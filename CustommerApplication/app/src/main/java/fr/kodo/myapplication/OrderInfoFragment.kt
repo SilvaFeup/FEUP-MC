@@ -8,13 +8,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.DialogFragment
-import fr.kodo.myapplication.controller.ANDROID_KEY_STORE
 import fr.kodo.myapplication.controller.Session
 import fr.kodo.myapplication.crypto.KeyStoreUtils
-import java.security.KeyStore
 import java.security.Signature
 
 

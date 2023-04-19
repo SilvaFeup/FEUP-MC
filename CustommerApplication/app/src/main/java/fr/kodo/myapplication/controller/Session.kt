@@ -2,25 +2,23 @@ package fr.kodo.myapplication.controller
 
 import android.content.Context
 import android.content.SharedPreferences
+import fr.kodo.myapplication.crypto.KeyStoreUtils
+import fr.kodo.myapplication.model.KEY_SUPERMARKET_PUBLIC_KEY
+import fr.kodo.myapplication.model.KEY_USERNAME
+import fr.kodo.myapplication.model.KEY_USER_UUID
+import fr.kodo.myapplication.model.PREFS_NAME
+import java.security.PublicKey
 
-const val ANDROID_KEY_STORE = "AndroidKeyStore"
+
 
 class Session(Context: Context) {
     private var prefs: SharedPreferences
     private var editor: SharedPreferences.Editor
-
     private var PRIVATE_MODE = 0
 
     init {
         prefs = Context.getSharedPreferences(PREFS_NAME, PRIVATE_MODE)
         editor = prefs.edit()
-    }
-
-    companion object {
-        const val PREFS_NAME = "CustomerApplicationUserSession"
-        const val KEY_USERNAME = "username"
-        const val KEY_USER_UUID = "userUUID"
-        const val KEY_SUPERMARKET_PUBLIC_KEY = "SupermarketPublicKey"
     }
 
     fun createSession(username: String, userUUID: String, supermarketPublicKey: String) {
@@ -46,8 +44,12 @@ class Session(Context: Context) {
         }
     }
 
-    fun getSupermarketPublicKey(): String? {
-        return prefs.getString(KEY_SUPERMARKET_PUBLIC_KEY, null)
+    fun getSupermarketPublicKey(): PublicKey {
+        if (prefs.getString(KEY_SUPERMARKET_PUBLIC_KEY, null) == null) {
+            throw Exception("User not logged in")
+        } else {
+            return KeyStoreUtils.getPublicKeyFromString(prefs.getString(KEY_SUPERMARKET_PUBLIC_KEY, null)!!)
+        }
     }
 
 
