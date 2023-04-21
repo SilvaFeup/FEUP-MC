@@ -66,20 +66,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun makeRequest(str: String){
-        if (str.isEmpty()){
-            Toast.makeText(this@MainActivity,"empty basket",Toast.LENGTH_LONG).show()
-            throw Exception("empty basket!")
-        }
+        try{
+            if (str.isEmpty()){
+                Toast.makeText(this@MainActivity,"empty basket",Toast.LENGTH_LONG).show()
+                throw Exception("empty basket!")
+            }
 
-        val array = str.split(",")
+            val array = str.split(",")
 
-        //the QR-code must contain at least the userId, the bool for discount and the voucherId
-        if (array.size < 3) {
-            Log.e("Error basket size", "the QR-code transmit less than 3 information!\n information are :\t $str")
-            Toast.makeText(this@MainActivity,"the QR-code transmit less than 3 information!",Toast.LENGTH_LONG).show()
-            return
-        }
-        try {
+            //the QR-code must contain at least the userId, the bool for discount and the voucherId
+            if (array.size < 3) {
+                Log.e("Error basket size", "the QR-code transmit less than 3 information!\n information are :\t $str")
+                Toast.makeText(this@MainActivity,"the QR-code transmit less than 3 information!",Toast.LENGTH_LONG).show()
+                return
+            }
             Log.e("QR-code",str)
 
             val idProductList: ArrayList<UUID> = ArrayList()

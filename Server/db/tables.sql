@@ -32,23 +32,6 @@ CREATE TABLE Product (
 );
 
 
-CREATE TABLE ShoppingBasket (
-    id INTEGER PRIMARY KEY,
-    accumulated_price FLOAT DEFAULT 0.0,
-    n_items INTEGER DEFAULT 0,
-    owner INTEGER REFERENCES User(id)
-
-);
-
-CREATE TABLE ShoppingBasketProduct (
-    id INTEGER PRIMARY KEY,
-    product INTEGER REFERENCES Product(id),
-    shop_basket INTEGER REFERENCES ShoppingBasket(id),
-    quantity INTEGER DEFAULT 1
-
-);
-
-
 CREATE TABLE OrderInfo (
 
     id INTEGER PRIMARY KEY,

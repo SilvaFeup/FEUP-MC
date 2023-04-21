@@ -8,7 +8,7 @@ if (fs.existsSync('public.pem') && fs.existsSync('private.pem')) {
   publicKey = fs.readFileSync('public.pem', 'utf8');
   privateKey = fs.readFileSync('private.pem', 'utf8');
 } else {
-  console.log('Generating new keys');
+  console.log('Generating new keys, restart the server');
   const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
     modulusLength: 512,
     publicKeyEncoding: {
@@ -24,8 +24,8 @@ if (fs.existsSync('public.pem') && fs.existsSync('private.pem')) {
   fs.writeFileSync('private.pem', privateKey);
 }
 
-console.log('publicKey: ', publicKey);
-console.log('publicKey base64: ', Buffer.from(publicKey).toString('base64'));
+//console.log('publicKey: ', publicKey);
+//console.log('publicKey base64: ', Buffer.from(publicKey).toString('base64'));
 
 
 
@@ -37,15 +37,15 @@ product2 = "807e8a08-d7b6-11ed-afa1-0242ac120002,product2,0.95"
 const encrypted = crypto.privateEncrypt(privateKey,
   Buffer.from(product0, 'utf8')
 );
-console.log('encrypted: ', encrypted.toString('base64'));
+//console.log('encrypted: ', encrypted.toString('base64'));
 const encrypted2 = crypto.privateEncrypt(privateKey,
   Buffer.from(product1, 'utf8')
 );
-console.log('encrypted: ', encrypted2.toString('base64'));
+//console.log('encrypted: ', encrypted2.toString('base64'));
 const encrypted3 = crypto.privateEncrypt(privateKey,
   Buffer.from(product2, 'utf8')
 );
-console.log('encrypted: ', encrypted3.toString('base64'));
+//console.log('encrypted: ', encrypted3.toString('base64'));
 
 
 //const decrypted = crypto.publicDecrypt(publicKey, encrypted);

@@ -160,6 +160,23 @@ router.post('/checkout', async(ctx,next) => {
       }
     }
 
+    //Check the voucher id
+    var voucherIdForDb =0
+        if(voucherId>0){
+          //is the id of voucher exist?
+          var listVoucher = await db.all("SELECT * FROM Voucher Where owner = ?",user.id)
+          var present = false;
+          listVoucher.forEach(voucher => {
+            if(voucher.id == voucherId){present = true}
+          })
+          voucherIdForDb =voucherId
+          if(!present){
+            ctx.body = {message: 'Voucher unknown'}
+            somethingIsWrong = true;
+          }
+        }
+        
+
 
       //Total calculation
       if(!somethingIsWrong){
@@ -197,32 +214,23 @@ router.post('/checkout', async(ctx,next) => {
 
       //use a voucher
       if(!somethingIsWrong){
-        var voucherIdForDb =0
-        if(voucherId>0){
-          //is the id of voucher exist?
-          var listVoucher = await db.all("SELECT * FROM Voucher Where owner = ?",user.id)
-          var present = false;
-          listVoucher.forEach(voucher => {
-            if(voucher.id == voucherId){present = true}
-          })
-          voucherIdForDb =voucherId
 
           //calcul of value and add it to the db
           if(present == true){
             var voucherValue = total*15/100;
+            //console.log(voucherValue)
+            //console.log(voucherValue.toFixed(2))
+            //console.log(discount)
             
-            discount =parseFloat( discount + voucherValue.toFixed(2))
+            discount = discount + voucherValue
+            discount = parseFloat(discount.toFixed(2))
+            //console.log(discount)
             
             await db.run("UPDATE User set accumulated_discount = ? WHERE uuid = ?",discount, user.uuid)
             await db.run("DELETE FROM Voucher WHERE id = ?",voucherId)
           }
-          else{
-            ctx.body = {message: 'Voucher unknown'}
-            somethingIsWrong = true;
-          }
         }
         else{voucherIdForDb = -1}
-      }
 
       //Creation of voucher
       if(!somethingIsWrong){
@@ -267,7 +275,7 @@ router.post('/voucher', async (ctx, next) => {
     const user = await db.get('SELECT * FROM User WHERE uuid = ?', owner);
 
     const voucherList = await db.all('SELECT * FROM Voucher WHERE owner = ?', user.id);
-    console.log(voucherList);
+    //console.log(voucherList);
 
     ctx.body = {voucherList};
     
@@ -291,7 +299,7 @@ router.get('/users/:uuid/transactions', async (ctx) => {
     const rows = await db.all('SELECT * FROM OrderInfo WHERE customer_id = ?', userId.id);
 
     // return the transactions as JSON
-    console.log(rows);
+    //console.log(rows);
     ctx.body = {pastTransactionList: rows};
 
   } catch (err) {
