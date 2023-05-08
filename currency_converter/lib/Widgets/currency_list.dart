@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../constants.dart';
 import '../models/currency.dart';
 
 class CurrencyList extends StatefulWidget {
@@ -28,10 +29,22 @@ class _CurrencyListState extends State<CurrencyList> {
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(snapshot.data![index].name),
-                    subtitle: Text(snapshot.data![index].code),
-                    trailing: Text(snapshot.data![index].amount.toString()),
+                  return Card(
+                    child: ListTile(
+                        leading: CircleAvatar(
+                          child: Text(snapshot.data![index].code),
+                        ),
+                        title: Text(snapshot.data![index].name),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                '${snapshot.data![index].amount}  ${snapshot.data![index].code}'),
+                            const SizedBox(width: 30),
+                            Text(
+                                '${(snapshot.data![index].rate * snapshot.data![index].amount).toStringAsFixed(2)} $base'),
+                          ],
+                        )),
                   );
                 },
               );
