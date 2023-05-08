@@ -1,0 +1,22 @@
+{
+  "currencies": [
+    {
+      "name": "US Dollar",
+      "code": "USD",
+      "amount": 100.0,
+      "rate": 1.0
+    },
+    {
+      "name": "Euro",
+      "code": "EUR",
+      "amount": 50.0,
+      "rate": 0.89
+    },
+    {
+      "name": "British Pound",
+      "code": "GBP",
+      "amount": 35.0,
+      "rate": 0.77
+    }
+  ]
+}
