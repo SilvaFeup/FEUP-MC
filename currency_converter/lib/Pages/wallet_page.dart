@@ -17,6 +17,9 @@ class _WalletPageState extends State<WalletPage> {
   // A Future variable to store the rates
   Future<Map<String, num>>? rates;
 
+  List<List<String>> symbolsList = readSymbolsFromFile();
+  String dropDownValue = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,10 +30,26 @@ class _WalletPageState extends State<WalletPage> {
           child: Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text('Total: '),
-                Text('0.00'),
-                DropdownMenu(dropdownMenuEntries: [])
+              children: [
+                const Text('Total: '),
+                const Text('0.00'),
+                const SizedBox(width: 20),
+                DropdownButton<String>(
+                  value: dropDownValue,
+                  items: [
+                    for (var item in symbolsList)
+                      DropdownMenuItem<String>(
+                        value: item[1],
+                        child: Text(item[0]),
+                      )
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      dropDownValue = value!;
+                      print(dropDownValue + ' selected');
+                    });
+                  },
+                ),
               ],
             ),
             const Expanded(
@@ -38,48 +57,20 @@ class _WalletPageState extends State<WalletPage> {
               child: CurrencyList(),
             ),
           ]),
-
-          /*child: FutureBuilder<Map<String, num>>(
-          future: rates,
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return const Text('No connection');
-              case ConnectionState.waiting:
-                return const CircularProgressIndicator();
-              case ConnectionState.active:
-              case ConnectionState.done:
-                if (snapshot.hasData) {
-                  return Column(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: CurrencyList(currencies: currencies),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Chart(
-                            currencies: currencies, rates: snapshot.data!),
-                      ),
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
-            }
-
-            return const Text('Something went wrong');
-          },
-        ), */
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() {
-              readSymbolsFromFile();
               //TODO: Update the rates
             });
           },
           child: const Icon(Icons.refresh),
         ));
+  }
+
+  @override
+  initState() {
+    super.initState();
+    dropDownValue = symbolsList[0][1];
   }
 }
