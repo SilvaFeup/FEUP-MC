@@ -1,3 +1,4 @@
+import 'package:currency_converter/models/currency.dart';
 import 'package:flutter/material.dart';
 import '../Services/fixer_service.dart';
 import '../Widgets/currency_list.dart';
@@ -11,14 +12,9 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
-  // An instance of FixerService
-  FixerService fixerService = FixerService();
-
-  // A Future variable to store the rates
-  Future<Map<String, num>>? rates;
-
   List<List<String>> symbolsList = readSymbolsFromFile();
-  String dropDownValue = '';
+  Currency baseCurrency =
+      Currency(code: 'EUR', name: 'Euro', amount: 0.0, rate: 1.0);
 
   @override
   Widget build(BuildContext context) {
@@ -34,22 +30,18 @@ class _WalletPageState extends State<WalletPage> {
                 const Text('Total: '),
                 const Text('0.00'),
                 const SizedBox(width: 20),
-                DropdownButton<String>(
-                  value: dropDownValue,
-                  items: [
+                DropdownMenu(
+                  initialSelection: baseCurrency.code,
+                  dropdownMenuEntries: [
                     for (var item in symbolsList)
-                      DropdownMenuItem<String>(
-                        value: item[1],
-                        child: Text(item[0]),
+                      DropdownMenuEntry(
+                        value: item[0],
+                        label: item[0],
                       )
                   ],
-                  onChanged: (value) {
-                    setState(() {
-                      dropDownValue = value!;
-                      print(dropDownValue + ' selected');
-                    });
-                  },
-                ),
+                  enableFilter: true,
+                  menuHeight: 500.0,
+                )
               ],
             ),
             const Expanded(
@@ -71,6 +63,6 @@ class _WalletPageState extends State<WalletPage> {
   @override
   initState() {
     super.initState();
-    dropDownValue = symbolsList[0][1];
+    baseCurrency = Currency(code: 'EUR', name: 'Euro', amount: 0.0, rate: 1.0);
   }
 }
