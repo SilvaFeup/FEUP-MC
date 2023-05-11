@@ -68,9 +68,7 @@ class _WalletPageState extends State<WalletPage> {
           },
         ), */
       ),
-    ),
-    bottomNavigationBar: const CustomNavBar(index: 0),
-
+      bottomNavigationBar: const CustomNavBar(index: 0),
     );
   }
 
