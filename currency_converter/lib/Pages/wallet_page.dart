@@ -1,3 +1,4 @@
+import 'package:currency_converter/Widgets/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../Services/fixer_service.dart';
@@ -67,6 +68,9 @@ class _WalletPageState extends State<WalletPage> {
           },
         ), */
       ),
+    ),
+    bottomNavigationBar: const CustomNavBar(index: 0),
+
     );
   }
 
