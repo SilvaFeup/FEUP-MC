@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import '../models/currency.dart';
+import 'package:flutter/services.dart';
 
-List<List<String>> readSymbolsFromFile() {
+import '../models/currency.dart';
+import '../models/rates.dart';
+
+Future<List<List<String>>> readSymbols() async {
   const directory = './Assets/symbols.json';
-  final file = File(directory);
-  final contents = file.readAsStringSync();
+  final contents = await rootBundle.loadString(directory);
   final json = jsonDecode(contents);
   final symbolsJson = json['symbols'];
 
@@ -16,7 +18,7 @@ List<List<String>> readSymbolsFromFile() {
   return symbolsList;
 }
 
-void updateCurrencyList(List<Currency> currencies) {
+void updateCurrencyFile(List<Currency> currencies) {
   const directory = './Assets/currencies.json';
   final file = File(directory);
   final contents = file.readAsStringSync();
@@ -32,4 +34,38 @@ void updateCurrencyList(List<Currency> currencies) {
   }
 
   file.writeAsStringSync(jsonEncode(json));
+}
+
+Future<List<Currency>> readCurrencies() async {
+  const directory = 'Assets/currencies.json';
+  final contents = await rootBundle.loadString(directory);
+  final json = jsonDecode(contents);
+  final currenciesJson = json['currencies'];
+
+  List<Currency> currenciesList = [];
+  for (var currency in currenciesJson) {
+    currenciesList.add(Currency(
+      name: currency['name'],
+      code: currency['code'],
+      amount: currency['amount'],
+      rate: currency['rate'],
+    ));
+  }
+  return currenciesList;
+}
+
+Future<List<Rates>> readRates() async {
+  const directory = './Assets/rates.json';
+  final contents = await rootBundle.loadString(directory);
+  final json = jsonDecode(contents);
+  final ratesJson = json['rates'];
+
+  List<Rates> ratesList = [];
+  for (var rate in ratesJson.entries) {
+    ratesList.add(Rates(
+      code: rate.key,
+      rate: rate.value.toDouble(),
+    ));
+  }
+  return ratesList;
 }

@@ -1,0 +1,8 @@
+{
+    "base-currency": {
+        "name": "US Dollar",
+        "code": "USD",
+        "amount": 100.0,
+        "rate": 1.0
+    }
+}

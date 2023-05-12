@@ -1,4 +1,5 @@
 import 'package:currency_converter/models/currency.dart';
+import 'package:currency_converter/models/rates.dart';
 import 'package:flutter/material.dart';
 import '../Services/fixer_service.dart';
 import '../Widgets/currency_list.dart';
@@ -12,9 +13,10 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
-  List<List<String>> symbolsList = readSymbolsFromFile();
-  Currency baseCurrency =
-      Currency(code: 'EUR', name: 'Euro', amount: 0.0, rate: 1.0);
+  List<List<String>> symbolsList = [];
+  Rates baseCurrency = Rates(code: 'USD', rate: 1);
+  List<Currency> currencies = [];
+  List<Rates> rates = [];
 
   @override
   Widget build(BuildContext context) {
@@ -31,22 +33,35 @@ class _WalletPageState extends State<WalletPage> {
                 const Text('0.00'),
                 const SizedBox(width: 20),
                 DropdownMenu(
-                  initialSelection: baseCurrency.code,
-                  dropdownMenuEntries: [
-                    for (var item in symbolsList)
-                      DropdownMenuEntry(
-                        value: item[0],
-                        label: item[0],
-                      )
-                  ],
-                  enableFilter: true,
-                  menuHeight: 500.0,
-                )
+                    initialSelection: baseCurrency.code,
+                    dropdownMenuEntries: [
+                      for (var item in symbolsList)
+                        DropdownMenuEntry(
+                          value: item[0],
+                          label: item[0],
+                        )
+                    ],
+                    enableFilter: true,
+                    menuHeight: 500.0,
+                    onSelected: (value) {
+                      if (value == baseCurrency.code) return;
+                      if (value == null) return;
+                      setState(() {
+                        baseCurrency = rates.firstWhere(
+                            (element) => element.code == value,
+                            orElse: () => throw Exception(
+                                'Currency with code $value not found'));
+                      });
+                      baseCurrencyChanged();
+                    })
               ],
             ),
-            const Expanded(
+            Expanded(
               flex: 2,
-              child: CurrencyList(),
+              child: CurrencyList(
+                baseCurrency: baseCurrency,
+                currencies: currencies,
+              ),
             ),
           ]),
         ),
@@ -63,6 +78,28 @@ class _WalletPageState extends State<WalletPage> {
   @override
   initState() {
     super.initState();
-    baseCurrency = Currency(code: 'EUR', name: 'Euro', amount: 0.0, rate: 1.0);
+    readCurrencies().then((value) {
+      setState(() {
+        currencies = List.from(value);
+      });
+    });
+    readRates().then((value) {
+      setState(() {
+        rates = List.from(value);
+      });
+    });
+    readSymbols().then((value) {
+      setState(() {
+        symbolsList = List.from(value);
+      });
+    });
+  }
+
+  void baseCurrencyChanged() {
+    for (var currency in currencies) {
+      currency.rate =
+          rates.firstWhere((element) => element.code == currency.code).rate /
+              baseCurrency.rate;
+    }
   }
 }
