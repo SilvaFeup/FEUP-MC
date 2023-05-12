@@ -13,7 +13,7 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
-  List<List<String>> symbolsList = [];
+  Future<List<List<String>>> symbolsList = readSymbols();
   Rates baseCurrency = Rates(code: 'USD', rate: 1);
   List<Currency> currencies = [];
   List<Rates> rates = [];
@@ -32,28 +32,39 @@ class _WalletPageState extends State<WalletPage> {
                 const Text('Total: '),
                 const Text('0.00'),
                 const SizedBox(width: 20),
-                DropdownMenu(
-                    initialSelection: baseCurrency.code,
-                    dropdownMenuEntries: [
-                      for (var item in symbolsList)
-                        DropdownMenuEntry(
-                          value: item[0],
-                          label: item[0],
-                        )
-                    ],
-                    enableFilter: true,
-                    menuHeight: 500.0,
-                    onSelected: (value) {
-                      if (value == baseCurrency.code) return;
-                      if (value == null) return;
-                      setState(() {
-                        baseCurrency = rates.firstWhere(
-                            (element) => element.code == value,
-                            orElse: () => throw Exception(
-                                'Currency with code $value not found'));
-                      });
-                      baseCurrencyChanged();
-                    })
+                FutureBuilder(
+                    future: symbolsList,
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                          return const CircularProgressIndicator();
+                        case ConnectionState.done:
+                          return DropdownMenu(
+                              initialSelection: baseCurrency.code,
+                              dropdownMenuEntries: [
+                                for (var item in snapshot.data!)
+                                  DropdownMenuEntry(
+                                    value: item[0],
+                                    label: item[0],
+                                  )
+                              ],
+                              enableFilter: true,
+                              menuHeight: 500.0,
+                              onSelected: (value) {
+                                if (value == baseCurrency.code) return;
+                                if (value == null) return;
+                                setState(() {
+                                  Rates newBaseCurrency = rates.firstWhere(
+                                      (element) => element.code == value,
+                                      orElse: () => throw Exception(
+                                          'Currency with code $value not found'));
+                                  baseCurrencyChanged(newBaseCurrency);
+                                });
+                              });
+                        default:
+                          return const Text('Error loading data');
+                      }
+                    }),
               ],
             ),
             Expanded(
@@ -78,6 +89,8 @@ class _WalletPageState extends State<WalletPage> {
   @override
   initState() {
     super.initState();
+
+    // Load the currencies and rates from the JSON files
     readCurrencies().then((value) {
       setState(() {
         currencies = List.from(value);
@@ -88,14 +101,10 @@ class _WalletPageState extends State<WalletPage> {
         rates = List.from(value);
       });
     });
-    readSymbols().then((value) {
-      setState(() {
-        symbolsList = List.from(value);
-      });
-    });
   }
 
-  void baseCurrencyChanged() {
+  void baseCurrencyChanged(Rates newBaseCurrency) {
+    baseCurrency = newBaseCurrency;
     for (var currency in currencies) {
       currency.rate =
           rates.firstWhere((element) => element.code == currency.code).rate /
