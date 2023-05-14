@@ -1,11 +1,10 @@
+import 'package:currency_converter/models/currency.dart';
+import 'package:currency_converter/models/rates.dart';
 import 'package:currency_converter/Widgets/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-
 import '../Services/fixer_service.dart';
-
-import '../constants.dart';
-
 import '../Widgets/currency_list.dart';
+import '../Controllers/JSON_controller.dart';
 
 class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
@@ -15,68 +14,125 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
-  // An instance of FixerService
-  FixerService fixerService = FixerService();
-
-  // A Future variable to store the rates
-  Future<Map<String, num>>? rates;
+  List<List<String>> symbolsList = [];
+  Rates baseCurrency = Rates(code: 'USD', rate: 1);
+  List<Currency> currencies = [];
+  List<Rates> rates = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Touristic Wallet'),
-      ),
-      body: Center(
-        child: Column(children: [
-          Expanded(
-            flex: 2,
-            child: CurrencyList(),
-          ),
-        ]),
-
-        /*child: FutureBuilder<Map<String, num>>(
-          future: rates,
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return const Text('No connection');
+        appBar: AppBar(
+          title: const Text('My Touristic Wallet'),
+        ),
+        body: FutureBuilder(
+          future: importAssets(),
+          builder: (context, assets) {
+            switch (assets.connectionState) {
               case ConnectionState.waiting:
                 return const CircularProgressIndicator();
-              case ConnectionState.active:
               case ConnectionState.done:
-                if (snapshot.hasData) {
-                  return Column(
-                    children: [
-                      Expanded(
+                return Center(
+                  child: Column(children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Total: '),
+                        const Text('0.00'),
+                        const SizedBox(width: 20),
+                        FutureBuilder(
+                            future: readSymbolsAndRates(),
+                            builder: (context, snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.waiting:
+                                  return const CircularProgressIndicator();
+                                case ConnectionState.done:
+                                  symbolsList = List.from(snapshot.data![0]);
+                                  rates = List.from(snapshot.data![1]);
+                                  return DropdownMenu(
+                                      initialSelection: baseCurrency.code,
+                                      dropdownMenuEntries: [
+                                        for (var item in symbolsList)
+                                          DropdownMenuEntry(
+                                            value: item[0],
+                                            label: item[0],
+                                          )
+                                      ],
+                                      enableFilter: true,
+                                      menuHeight: 500.0,
+                                      onSelected: (value) {
+                                        if (value == baseCurrency.code) return;
+                                        if (value == null) return;
+                                        setState(() {
+                                          Rates newBaseCurrency = rates.firstWhere(
+                                              (element) =>
+                                                  element.code == value,
+                                              orElse: () => throw Exception(
+                                                  'Currency with code $value not found'));
+                                          baseCurrencyChanged(newBaseCurrency);
+                                        });
+                                      });
+                                default:
+                                  return const Text('Error loading data');
+                              }
+                            }),
+                      ],
+                    ),
+                    Expanded(
                         flex: 2,
-                        child: CurrencyList(currencies: currencies),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Chart(
-                            currencies: currencies, rates: snapshot.data!),
-                      ),
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
+                        child: FutureBuilder(
+                          future: readCurrencies(),
+                          builder: (context, currenciesSnapshot) {
+                            switch (currenciesSnapshot.connectionState) {
+                              case ConnectionState.waiting:
+                                return const CircularProgressIndicator();
+                              case ConnectionState.done:
+                                currencies =
+                                    List.from(currenciesSnapshot.data!);
+                                return CurrencyList(
+                                  baseCurrency: baseCurrency,
+                                  currencies: currencies,
+                                );
+                              default:
+                                return const Text('Error loading data');
+                            }
+                          },
+                        )),
+                  ]),
+                );
+              default:
+                return const Text('Error loading data');
             }
-
-            return const Text('Something went wrong');
           },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              //TODO: Update the rates
+            });
+          },
+          child: const Icon(Icons.refresh),
+        ));
+
         ), */
       ),
       bottomNavigationBar: const CustomNavBar(index: 0),
     );
+
   }
 
   @override
-  void initState() {
+  initState() {
     super.initState();
-    // Get the rates for the base currency and the symbols in the wallet
-    /*rates = fixerService.getRates(base,
-        symbols: currencies.map((currency) => currency.code).toList());*/
+    // Load the currencies and rates from the JSON files
+  }
+
+  void baseCurrencyChanged(Rates newBaseCurrency) {
+    baseCurrency = newBaseCurrency;
+    for (var currency in currencies) {
+      currency.rate =
+          rates.firstWhere((element) => element.code == currency.code).rate /
+              baseCurrency.rate;
+    }
   }
 }
