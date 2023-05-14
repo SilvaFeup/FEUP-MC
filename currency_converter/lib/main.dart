@@ -1,8 +1,8 @@
+import 'package:currency_converter/Pages/wallet_page.dart';
 import 'package:flutter/material.dart';
-import 'Pages/wallet_page.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: WalletPage(),
-  ));
-}
+  runApp(
+    const MaterialApp(home: WalletPage(),
+    )
+  );}

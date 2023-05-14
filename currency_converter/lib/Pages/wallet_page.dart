@@ -1,5 +1,6 @@
 import 'package:currency_converter/models/currency.dart';
 import 'package:currency_converter/models/rates.dart';
+import 'package:currency_converter/Widgets/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import '../Services/fixer_service.dart';
 import '../Widgets/currency_list.dart';
@@ -112,6 +113,12 @@ class _WalletPageState extends State<WalletPage> {
           },
           child: const Icon(Icons.refresh),
         ));
+
+        ), */
+      ),
+      bottomNavigationBar: const CustomNavBar(index: 0),
+    );
+
   }
 
   @override
