@@ -18,6 +18,8 @@ class CurrencyList extends StatefulWidget {
 }
 
 class _CurrencyListState extends State<CurrencyList> {
+  final amountController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -40,7 +42,44 @@ class _CurrencyListState extends State<CurrencyList> {
                   Text(
                       '${widget.currencies[index].amount}  ${widget.currencies[index].code}'),
                 ],
-              )),
+              ),
+              onTap: () {
+                amountController.text =
+                    widget.currencies[index].amount.toString();
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text(
+                          "Change amount of ${widget.currencies[index].code}"),
+                      content: TextFormField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter amount',
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Cancel')),
+                        TextButton(
+                            onPressed: () {
+                              setState(() {
+                                widget.currencies[index].amount =
+                                    double.parse(amountController.text);
+                                updateCurrency(widget.currencies);
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Save')),
+                      ],
+                    );
+                  },
+                );
+              }),
         );
       },
     );

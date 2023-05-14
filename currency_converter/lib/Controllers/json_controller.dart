@@ -1,13 +1,46 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
-
+import 'package:path_provider/path_provider.dart';
 import '../models/currency.dart';
 import '../models/rates.dart';
+import 'package:path/path.dart' as path;
+
+//final Directory dataDirectory = await getApplicationSupportDirectory();
+
+Future<void> importAssets() async {
+  final Directory appSupportDir = await getApplicationSupportDirectory();
+  final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
+  if (!await dataDir.exists()) {
+    await dataDir.create();
+
+    final currencies = await rootBundle.load('Assets/currencies.json');
+    File file = File(path.join(dataDir.path, 'currencies.json'));
+    file.writeAsBytes(currencies.buffer.asUint8List());
+
+    final rates = await rootBundle.load('Assets/rates.json');
+    file = File(path.join(dataDir.path, 'rates.json'));
+    file.writeAsBytes(rates.buffer.asUint8List());
+
+    final symbols = await rootBundle.load('Assets/symbols.json');
+    file = File(path.join(dataDir.path, 'symbols.json'));
+    file.writeAsBytes(symbols.buffer.asUint8List());
+
+    final baseCurrency = await rootBundle.load('Assets/base-currency.json');
+    file = File(path.join(dataDir.path, 'base-currency.json'));
+    file.writeAsBytes(baseCurrency.buffer.asUint8List());
+    print('Data directory created');
+  } else {
+    print('Data directory already exists');
+    print((await getApplicationSupportDirectory()).path);
+  }
+}
 
 Future<List<List<String>>> readSymbols() async {
-  const directory = './Assets/symbols.json';
-  final contents = await rootBundle.loadString(directory);
+  final Directory appSupportDir = await getApplicationSupportDirectory();
+  final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
+  final File file = File(path.join(dataDir.path, 'symbols.json'));
+  final contents = await file.readAsString();
   final json = jsonDecode(contents);
   final symbolsJson = json['symbols'];
 
@@ -18,27 +51,31 @@ Future<List<List<String>>> readSymbols() async {
   return symbolsList;
 }
 
-void updateCurrencyFile(List<Currency> currencies) {
-  const directory = './Assets/currencies.json';
-  final file = File(directory);
-  final contents = file.readAsStringSync();
+void updateCurrency(List<Currency> currencies) async {
+  final Directory appSupportDir = await getApplicationSupportDirectory();
+  final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
+  final File file = File(path.join(dataDir.path, 'currencies.json'));
+  final contents = await file.readAsString();
   final json = jsonDecode(contents);
   final currenciesJson = json['currencies'];
 
-  for (var currency in currencies) {
-    currenciesJson[currency.code] = {
-      'name': currency.name,
-      'amount': currency.amount,
-      'rate': currency.rate
-    };
+  for (var currency in currenciesJson) {
+    currency['amount'] = currencies
+        .firstWhere((element) => element.code == currency['code'])
+        .amount;
   }
 
-  file.writeAsStringSync(jsonEncode(json));
+  //TODO: Write to file
+  //final newContents = jsonEncode(json);
+
+  final Directory test2 = await getApplicationSupportDirectory();
 }
 
 Future<List<Currency>> readCurrencies() async {
-  const directory = 'Assets/currencies.json';
-  final contents = await rootBundle.loadString(directory);
+  final Directory appSupportDir = await getApplicationSupportDirectory();
+  final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
+  final File file = File(path.join(dataDir.path, 'currencies.json'));
+  final contents = await file.readAsString();
   final json = jsonDecode(contents);
   final currenciesJson = json['currencies'];
 
@@ -55,8 +92,10 @@ Future<List<Currency>> readCurrencies() async {
 }
 
 Future<List<Rates>> readRates() async {
-  const directory = './Assets/rates.json';
-  final contents = await rootBundle.loadString(directory);
+  final Directory appSupportDir = await getApplicationSupportDirectory();
+  final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
+  final File file = File(path.join(dataDir.path, 'rates.json'));
+  final contents = await file.readAsString();
   final json = jsonDecode(contents);
   final ratesJson = json['rates'];
 
@@ -68,4 +107,10 @@ Future<List<Rates>> readRates() async {
     ));
   }
   return ratesList;
+}
+
+Future<List> readSymbolsAndRates() async {
+  var rates = await readRates();
+  var symbols = await readSymbols();
+  return [symbols, rates];
 }
