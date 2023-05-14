@@ -22,103 +22,97 @@ class _WalletPageState extends State<WalletPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('My Touristic Wallet'),
-        ),
-        body: FutureBuilder(
-          future: importAssets(),
-          builder: (context, assets) {
-            switch (assets.connectionState) {
-              case ConnectionState.waiting:
-                return const CircularProgressIndicator();
-              case ConnectionState.done:
-                return Center(
-                  child: Column(children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Total: '),
-                        const Text('0.00'),
-                        const SizedBox(width: 20),
-                        FutureBuilder(
-                            future: readSymbolsAndRates(),
-                            builder: (context, snapshot) {
-                              switch (snapshot.connectionState) {
-                                case ConnectionState.waiting:
-                                  return const CircularProgressIndicator();
-                                case ConnectionState.done:
-                                  symbolsList = List.from(snapshot.data![0]);
-                                  rates = List.from(snapshot.data![1]);
-                                  return DropdownMenu(
-                                      initialSelection: baseCurrency.code,
-                                      dropdownMenuEntries: [
-                                        for (var item in symbolsList)
-                                          DropdownMenuEntry(
-                                            value: item[0],
-                                            label: item[0],
-                                          )
-                                      ],
-                                      enableFilter: true,
-                                      menuHeight: 500.0,
-                                      onSelected: (value) {
-                                        if (value == baseCurrency.code) return;
-                                        if (value == null) return;
-                                        setState(() {
-                                          Rates newBaseCurrency = rates.firstWhere(
-                                              (element) =>
-                                                  element.code == value,
-                                              orElse: () => throw Exception(
-                                                  'Currency with code $value not found'));
-                                          baseCurrencyChanged(newBaseCurrency);
-                                        });
-                                      });
-                                default:
-                                  return const Text('Error loading data');
-                              }
-                            }),
-                      ],
-                    ),
-                    Expanded(
-                        flex: 2,
-                        child: FutureBuilder(
-                          future: readCurrencies(),
-                          builder: (context, currenciesSnapshot) {
-                            switch (currenciesSnapshot.connectionState) {
+      appBar: AppBar(
+        title: const Text('My Touristic Wallet'),
+      ),
+      body: FutureBuilder(
+        future: importAssets(),
+        builder: (context, assets) {
+          switch (assets.connectionState) {
+            case ConnectionState.waiting:
+              return const CircularProgressIndicator();
+            case ConnectionState.done:
+              return Center(
+                child: Column(children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Total: '),
+                      const Text('0.00'),
+                      const SizedBox(width: 20),
+                      FutureBuilder(
+                          future: readSymbolsAndRates(),
+                          builder: (context, snapshot) {
+                            switch (snapshot.connectionState) {
                               case ConnectionState.waiting:
                                 return const CircularProgressIndicator();
                               case ConnectionState.done:
-                                currencies =
-                                    List.from(currenciesSnapshot.data!);
-                                return CurrencyList(
-                                  baseCurrency: baseCurrency,
-                                  currencies: currencies,
-                                );
+                                symbolsList = List.from(snapshot.data![0]);
+                                rates = List.from(snapshot.data![1]);
+                                return DropdownMenu(
+                                    initialSelection: baseCurrency.code,
+                                    dropdownMenuEntries: [
+                                      for (var item in symbolsList)
+                                        DropdownMenuEntry(
+                                          value: item[0],
+                                          label: item[0],
+                                        )
+                                    ],
+                                    enableFilter: true,
+                                    menuHeight: 500.0,
+                                    onSelected: (value) {
+                                      if (value == baseCurrency.code) return;
+                                      if (value == null) return;
+                                      setState(() {
+                                        Rates newBaseCurrency = rates.firstWhere(
+                                            (element) => element.code == value,
+                                            orElse: () => throw Exception(
+                                                'Currency with code $value not found'));
+                                        baseCurrencyChanged(newBaseCurrency);
+                                      });
+                                    });
                               default:
                                 return const Text('Error loading data');
                             }
-                          },
-                        )),
-                  ]),
-                );
-              default:
-                return const Text('Error loading data');
-            }
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              //TODO: Update the rates
-            });
-          },
-          child: const Icon(Icons.refresh),
-        ));
-
-        ), */
+                          }),
+                    ],
+                  ),
+                  Expanded(
+                      flex: 2,
+                      child: FutureBuilder(
+                        future: readCurrencies(),
+                        builder: (context, currenciesSnapshot) {
+                          switch (currenciesSnapshot.connectionState) {
+                            case ConnectionState.waiting:
+                              return const CircularProgressIndicator();
+                            case ConnectionState.done:
+                              currencies = List.from(currenciesSnapshot.data!);
+                              return CurrencyList(
+                                baseCurrency: baseCurrency,
+                                currencies: currencies,
+                              );
+                            default:
+                              return const Text('Error loading data');
+                          }
+                        },
+                      )),
+                ]),
+              );
+            default:
+              return const Text('Error loading data');
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            //TODO: Update the rates
+          });
+        },
+        child: const Icon(Icons.refresh),
       ),
       bottomNavigationBar: const CustomNavBar(index: 0),
     );
-
   }
 
   @override
