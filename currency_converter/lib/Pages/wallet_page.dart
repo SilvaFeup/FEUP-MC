@@ -1,10 +1,14 @@
 import 'package:currency_converter/models/currency.dart';
 import 'package:currency_converter/models/rates.dart';
-import 'package:currency_converter/Widgets/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import '../Services/fixer_service.dart';
 import '../Widgets/currency_list.dart';
+
 import '../Controllers/JSON_controller.dart';
+
+
+
+
 
 class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
@@ -105,9 +109,10 @@ class _WalletPageState extends State<WalletPage> {
         },
         child: const Icon(Icons.refresh),
       ),
-      bottomNavigationBar: const CustomNavBar(index: 0),
     );
   }
+
+
 
   @override
   initState() {

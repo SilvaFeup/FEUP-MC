@@ -1,7 +1,6 @@
-import 'package:currency_converter/Widgets/custom_navigation_bar.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+
 
 class GraphPage extends StatefulWidget {
   const GraphPage({super.key});
@@ -15,7 +14,7 @@ class _GraphPageState extends State<GraphPage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Text("graph"),
-      bottomNavigationBar: CustomNavBar(index: 2),
+
       );
   }
 }
