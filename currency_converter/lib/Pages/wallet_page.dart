@@ -68,14 +68,23 @@ class _WalletPageState extends State<WalletPage> {
                                             (element) => element.code == value,
                                             orElse: () => throw Exception(
                                                 'Currency with code $value not found'));
+
+                                        print(newBaseCurrency.code +
+                                            ' ' +
+                                            newBaseCurrency.rate.toString());
                                         baseCurrency = newBaseCurrency;
-                                        print(baseCurrency.rate);
+                                        print(baseCurrency.code +
+                                            ' ' +
+                                            baseCurrency.rate.toString());
                                         readCurrencies().then((value) {
                                           List<Currency> currencies =
                                               List.from(value);
                                           for (var item in currencies) {
-                                            item.rate =
-                                                item.rate / baseCurrency.rate;
+                                            Rates currency = rates.firstWhere(
+                                                (element) =>
+                                                    element.code == item.code);
+                                            item.rate = currency.rate /
+                                                baseCurrency.rate;
                                           }
                                           updateCurrency(currencies);
                                           currencyList.baseCurrency =
