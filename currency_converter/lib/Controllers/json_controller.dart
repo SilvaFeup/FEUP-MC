@@ -57,17 +57,19 @@ void updateCurrency(List<Currency> currencies) async {
   final Directory appSupportDir = await getApplicationSupportDirectory();
   final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
   final File file = File(path.join(dataDir.path, 'currencies.json'));
-  final contents = await file.readAsString();
-  final json = jsonDecode(contents);
-  final currenciesJson = json['currencies'];
+  List<Currency> currenciesList = List.from(currencies);
 
-  for (var currency in currenciesJson) {
-    currency['amount'] = currencies
-        .firstWhere((element) => element.code == currency['code'])
-        .amount;
+  Map<String, dynamic> json = {};
+  json['currencies'] = [];
+  for (var currency in currenciesList) {
+    json['currencies'].add({
+      'name': currency.name,
+      'code': currency.code,
+      'amount': currency.amount,
+      'rate': currency.rate,
+    });
   }
-
-  //TODO change currencies.json file
+  file.writeAsString(jsonEncode(json));
 }
 
 void updateRates() async {
