@@ -1,10 +1,14 @@
 import 'package:currency_converter/models/currency.dart';
 import 'package:currency_converter/models/rates.dart';
-import 'package:currency_converter/Widgets/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import '../Services/fixer_service.dart';
 import '../Widgets/currency_list.dart';
+
 import '../Controllers/JSON_controller.dart';
+
+
+
+
 
 class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
@@ -16,8 +20,8 @@ class WalletPage extends StatefulWidget {
 class _WalletPageState extends State<WalletPage> {
   List<List<String>> symbolsList = [];
   Rates baseCurrency = Rates(code: 'USD', rate: 1);
-  List<Currency> currencies = [];
   List<Rates> rates = [];
+  CurrencyList currencyList = CurrencyList();
 
   @override
   Widget build(BuildContext context) {
@@ -61,14 +65,26 @@ class _WalletPageState extends State<WalletPage> {
                                     enableFilter: true,
                                     menuHeight: 500.0,
                                     onSelected: (value) {
-                                      if (value == baseCurrency.code) return;
-                                      if (value == null) return;
                                       setState(() {
+                                        if (value == baseCurrency.code) return;
+                                        if (value == null) return;
                                         Rates newBaseCurrency = rates.firstWhere(
                                             (element) => element.code == value,
                                             orElse: () => throw Exception(
                                                 'Currency with code $value not found'));
-                                        baseCurrencyChanged(newBaseCurrency);
+                                        baseCurrency = newBaseCurrency;
+                                        print(baseCurrency.rate);
+                                        readCurrencies().then((value) {
+                                          List<Currency> currencies =
+                                              List.from(value);
+                                          for (var item in currencies) {
+                                            item.rate =
+                                                item.rate / baseCurrency.rate;
+                                          }
+                                          updateCurrency(currencies);
+                                          currencyList.baseCurrency =
+                                              baseCurrency;
+                                        });
                                       });
                                     });
                               default:
@@ -77,25 +93,7 @@ class _WalletPageState extends State<WalletPage> {
                           }),
                     ],
                   ),
-                  Expanded(
-                      flex: 2,
-                      child: FutureBuilder(
-                        future: readCurrencies(),
-                        builder: (context, currenciesSnapshot) {
-                          switch (currenciesSnapshot.connectionState) {
-                            case ConnectionState.waiting:
-                              return const CircularProgressIndicator();
-                            case ConnectionState.done:
-                              currencies = List.from(currenciesSnapshot.data!);
-                              return CurrencyList(
-                                baseCurrency: baseCurrency,
-                                currencies: currencies,
-                              );
-                            default:
-                              return const Text('Error loading data');
-                          }
-                        },
-                      )),
+                  Expanded(flex: 2, child: currencyList),
                 ]),
               );
             default:
@@ -111,22 +109,14 @@ class _WalletPageState extends State<WalletPage> {
         },
         child: const Icon(Icons.refresh),
       ),
-      bottomNavigationBar: const CustomNavBar(index: 0),
     );
   }
+
+
 
   @override
   initState() {
     super.initState();
     // Load the currencies and rates from the JSON files
-  }
-
-  void baseCurrencyChanged(Rates newBaseCurrency) {
-    baseCurrency = newBaseCurrency;
-    for (var currency in currencies) {
-      currency.rate =
-          rates.firstWhere((element) => element.code == currency.code).rate /
-              baseCurrency.rate;
-    }
   }
 }
