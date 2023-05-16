@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:core';
+import 'dart:io';
 import '../constants.dart';
 import 'package:http/http.dart' as http;
 
 class FixerService {
   final String baseUrl = 'https://api.apilayer.com/fixer/latest';
-  final String apiKey = '9dOdXBzMDWBpAY8ZZ9IdzYfpGKJuBqAQ';
+  final String apiKey = 'lpPOBXxzvOGzUACn3E0XcKilXMXXASK6';
 
-  Future<Map<String, num>> getRates(String base,
+  Future<Map<String, dynamic>> getRates(String base,
       {List<String>? symbols}) async {
     try {
       // Initialize the URL with the base and access key
@@ -22,8 +23,9 @@ class FixerService {
           await http.get(Uri.parse(url), headers: {'apikey': apiKey});
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        final rates = data['rates'] as Map<String, dynamic>;
-        return rates.map((key, value) => MapEntry(key, value as num));
+
+
+        return data;//.map((key, value) => MapEntry(key, value as dynamic));
       } else {
         throw Exception('Failed to get rates');
       }

@@ -2,9 +2,9 @@ import 'package:currency_converter/models/currency.dart';
 import 'package:currency_converter/models/rates.dart';
 import 'package:currency_converter/Widgets/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import '../Controllers/json_controller.dart';
 import '../Services/fixer_service.dart';
 import '../Widgets/currency_list.dart';
-import '../Controllers/JSON_controller.dart';
 
 class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
@@ -106,7 +106,7 @@ class _WalletPageState extends State<WalletPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            //TODO: Update the rates
+            updateRates();
           });
         },
         child: const Icon(Icons.refresh),

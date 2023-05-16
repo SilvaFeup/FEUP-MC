@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:currency_converter/Services/fixer_service.dart';
+import 'package:currency_converter/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/currency.dart';
@@ -29,10 +31,10 @@ Future<void> importAssets() async {
     final baseCurrency = await rootBundle.load('Assets/base-currency.json');
     file = File(path.join(dataDir.path, 'base-currency.json'));
     file.writeAsBytes(baseCurrency.buffer.asUint8List());
-    print('Data directory created');
+    //print('Data directory created');
   } else {
-    print('Data directory already exists');
-    print((await getApplicationSupportDirectory()).path);
+    //print('Data directory already exists');
+    //print((await getApplicationSupportDirectory()).path);
   }
 }
 
@@ -65,10 +67,44 @@ void updateCurrency(List<Currency> currencies) async {
         .amount;
   }
 
-  //TODO: Write to file
-  //final newContents = jsonEncode(json);
+  //TODO change currencies.json file
+}
 
-  final Directory test2 = await getApplicationSupportDirectory();
+void updateRates() async {
+  final Directory appSupportDir = await getApplicationSupportDirectory();
+  final Directory dataDir = Directory(path.join(appSupportDir.path,'data'));
+  final File file = File(path.join(dataDir.path,'symbols.json'));
+  final content = await file.readAsString();
+  final json = jsonDecode(content);
+  final symbolsJson = json['symbols'];
+  List<String> listSymbols = [];
+
+  for (var symbol in symbolsJson.entries){
+    listSymbols.add(symbol.key);
+  }
+
+  var fixerService = FixerService();
+  var data =  await fixerService.getRates(base, symbols: listSymbols);
+
+  File requestFile = File(path.join(dataDir.path, 'rates.json'));
+  Map<String, dynamic> jsonFile = {};
+  jsonFile.addAll({
+    'success': data['success'],
+    'timestamp': data['timestamp'],
+    'base': data['base'],
+    'date': data['date'],
+    'rates': data['rates']
+  });/*
+  jsonFile['success'] = data['success'];
+  jsonFile['timestamp'] = data['timestamp'];
+  jsonFile['base'] = data['base'];
+  jsonFile['date'] = data['date'];
+  jsonFile['rates'] = data['rates'];*/
+
+
+  var jsonString = jsonEncode(jsonFile);
+  requestFile.writeAsStringSync(jsonString);
+  print('ok');
 }
 
 Future<List<Currency>> readCurrencies() async {
