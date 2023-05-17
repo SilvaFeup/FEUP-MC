@@ -70,15 +70,28 @@ class Chart extends StatelessWidget {
                                   return Text('Error: ${snapshot.error}');
                                 } else {
                                   final sections = snapshot.data!;
-                                  return PieChart(
-                                    PieChartData(
-                                      sections: sections,
-                                      sectionsSpace: 0,
-                                      centerSpaceRadius: 40,
-                                      borderData: FlBorderData(show: false),
-                                      pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
-                                        // TODO: implement showing details on touch
-                                      }),
+                                  return SafeArea(
+                                    child: Column(
+                                      children: [
+                                        // Use the getTitles function to show the titles
+                                        getTitles(baseCurrency),
+                                        // Use a Flexible widget to wrap the PieChart widget
+                                        Flexible(
+                                          child: PieChart(
+                                            PieChartData(
+                                              sections: sections,
+                                              sectionsSpace: 0,
+                                              centerSpaceRadius: 40,
+                                              borderData: FlBorderData(show: false),
+                                              pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
+                                                  // TODO: implement showing details on touch
+                                              }),
+                                            ),
+                                          ),
+                                        ),
+                                        // Use the getIndicators function to show the indicators
+                                        getIndicators(colorsMap, currencyList),
+                                      ],
                                     ),
                                   );
                                 }
