@@ -117,6 +117,24 @@ Future<void> updateRates() async {
   updateCurrency(currencies);
 }
 
+Future<Currency> readBaseCurrency() async {
+  final Directory appSupportDir = await getApplicationSupportDirectory();
+  final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
+  final File file = File(path.join(dataDir.path, 'base-currency.json'));
+  final contents = await file.readAsString();
+  final json = jsonDecode(contents);
+  final currenciesJson = json['base-currency'];
+
+  var baseCurrency = Currency(
+    name: currenciesJson['name'],
+    code: currenciesJson['code'],
+    amount: currenciesJson['amount'],
+    rate: currenciesJson['rate'],
+  );
+
+  return baseCurrency;
+}
+
 Future<List<Currency>> readCurrencies() async {
   final Directory appSupportDir = await getApplicationSupportDirectory();
   final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
