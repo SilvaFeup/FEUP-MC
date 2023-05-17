@@ -140,10 +140,25 @@ class _WalletPageState extends State<WalletPage> {
               right: 30,
               bottom: 20,
               child: FloatingActionButton(
-                onPressed: () {},
-                child: const Icon(Icons.refresh),
-              ),
-            )
+                onPressed: () {
+                  if (isRefreshButtonDisabled) {
+                    null;
+                  }
+                  else {
+                    isRefreshButtonDisabled = true;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("the request is send, please wait for the response.")
+                      ));
+                    updateRates().then((value) {
+                      setState(() {
+                        isRefreshButtonDisabled = false;
+                      });
+                    });
+                }},
+                child: const Icon(Icons.refresh)
+              )
+            ),
           ],
         ));
   }

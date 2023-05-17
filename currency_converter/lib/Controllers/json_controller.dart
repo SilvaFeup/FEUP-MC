@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:currency_converter/Services/fixer_service.dart';
-import 'package:currency_converter/Widgets/currency_list.dart';
 import 'package:currency_converter/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
