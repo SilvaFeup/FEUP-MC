@@ -13,6 +13,7 @@ class Chart extends StatelessWidget {
   final Future<Map<String, Color>> colors;
   final Future<List<Rates>> rates;
 
+
   const Chart({
     Key? key,
     required this.currencies,
@@ -90,7 +91,7 @@ class Chart extends StatelessWidget {
                                           ),
                                         ),
                                         // Use the getIndicators function to show the indicators
-                                        getIndicators(colorsMap, currencyList),
+                                        //getIndicators(colorsMap, currencyList),
                                       ],
                                     ),
                                   );
@@ -112,22 +113,42 @@ class Chart extends StatelessWidget {
   }
 
 
-  Future<List<PieChartSectionData>> getSections(List<Currency> currencies, Currency base, List<Rates> rates) {
-    return colors.then((Map<String, Color> colorsMap) {
-      double total = currencies.fold(0, (sum, currency) => sum + currency.convertTo(base.code));
-      return List.generate(currencies.length, (index) {
-        final currency = currencies[index];
-        final percentage = currency.convertTo(base.code) / total * 100;
-        final color = colorsMap[currency.code]!;
-        return PieChartSectionData(
-          value: percentage,
-          color: color,
-          title: '${percentage.toStringAsFixed(1)}%',
-          titleStyle: const TextStyle(color: Colors.white),
-          radius: 100,
-          showTitle: true,
-        );
-      });
+  Future<List<PieChartSectionData>> getSections(List<Currency> currencies, Currency base, List<Rates> rates) async {
+    // Use await to get the colors map from the future
+    final colorsMap = await colors;
+    double total = currencies.fold(0, (sum, currency) => sum + currency.convertTo(base.code));
+    return List.generate(currencies.length, (index) {
+      final currency = currencies[index];
+      final percentage = currency.convertTo(base.code) / total * 100;
+      final color = colorsMap[currency.code]!;
+      return PieChartSectionData(
+        value: percentage,
+        color: color,
+        title: '${percentage.toStringAsFixed(1)}%',
+        titleStyle: const TextStyle(color: Colors.white),
+        radius: 100,
+        showTitle: true,
+// Modify the badgeWidget property to make it more clear and understandable
+        badgeWidget: Container(
+          width: 34, // Increase the width
+          height: 34, // Increase the height
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+          ),
+          child: Center(
+            child: Text(
+              currency.code,
+              style: const TextStyle(
+                color: Colors.white, // Use a different color for the text
+                fontSize: 16, // Increase the font size
+                fontWeight: FontWeight.bold, // Increase the font weight
+              ),
+            ),
+          ),
+        ),
+        badgePositionPercentageOffset: 1.2, // Change the offset value
+      );
     });
   }
 
