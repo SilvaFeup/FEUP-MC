@@ -105,30 +105,50 @@ class _WalletPageState extends State<WalletPage> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (isRefreshButtonDisabled) {
-            null;
-          }
-          else {
-            //setState(() {
-              isRefreshButtonDisabled = true;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("the request is send, please wait for the response.")
-                )
-              );
-           // });
-            updateRates().then((value) {
-              setState(() {
-                isRefreshButtonDisabled = false;
-              });
-            });
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned(
+            left:30,
+            bottom:20,
+            child: FloatingActionButton(
+              onPressed: (){},
+              child: const Icon(Icons.add),
+            ),
+          ),
+          Positioned(
+            right:30,
+            bottom:20,
+            child: FloatingActionButton(
+              onPressed: () {
+    if (isRefreshButtonDisabled) {
+    null;
+    }
+    else {
+    //setState(() {
+    isRefreshButtonDisabled = true;
+    ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+    content: Text("the request is send, please wait for the response.")
+    )
+    );
+    // });
+    updateRates().then((value) {
+    setState(() {
+    isRefreshButtonDisabled = false;
+    });
+    });
 
-          }},
+    }},
 
         child: const Icon(Icons.refresh)
-      ),
+    ),
+          )
+        ],
+      )
+
+
 
     );
   }
