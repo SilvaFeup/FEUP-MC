@@ -6,10 +6,6 @@ import '../Widgets/currency_list.dart';
 
 import '../Controllers/JSON_controller.dart';
 
-
-
-
-
 class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
 
@@ -26,102 +22,132 @@ class _WalletPageState extends State<WalletPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Touristic Wallet'),
-      ),
-      body: FutureBuilder(
-        future: importAssets(),
-        builder: (context, assets) {
-          switch (assets.connectionState) {
-            case ConnectionState.waiting:
-              return const CircularProgressIndicator();
-            case ConnectionState.done:
-              return Center(
-                child: Column(children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Total: '),
-                      const Text('0.00'),
-                      const SizedBox(width: 20),
-                      FutureBuilder(
-                          future: readSymbolsAndRates(),
+        appBar: AppBar(
+          title: const Text('My Touristic Wallet'),
+        ),
+        body: FutureBuilder(
+          future: importAssets(),
+          builder: (context, assets) {
+            switch (assets.connectionState) {
+              case ConnectionState.waiting:
+                return const CircularProgressIndicator();
+              case ConnectionState.done:
+                return Center(
+                  child: Column(children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Total: '),
+                        FutureBuilder(
+                          future: readCurrencies(),
                           builder: (context, snapshot) {
                             switch (snapshot.connectionState) {
                               case ConnectionState.waiting:
                                 return const CircularProgressIndicator();
                               case ConnectionState.done:
-                                symbolsList = List.from(snapshot.data![0]);
-                                rates = List.from(snapshot.data![1]);
-                                return DropdownMenu(
-                                    initialSelection: baseCurrency.code,
-                                    dropdownMenuEntries: [
-                                      for (var item in symbolsList)
-                                        DropdownMenuEntry(
-                                          value: item[0],
-                                          label: item[0],
-                                        )
-                                    ],
-                                    enableFilter: true,
-                                    menuHeight: 500.0,
-                                    onSelected: (value) {
-                                      setState(() {
-                                        if (value == baseCurrency.code) return;
-                                        if (value == null) return;
-                                        Rates newBaseCurrency = rates.firstWhere(
-                                            (element) => element.code == value,
-                                            orElse: () => throw Exception(
-                                                'Currency with code $value not found'));
-
-                                        print(newBaseCurrency.code +
-                                            ' ' +
-                                            newBaseCurrency.rate.toString());
-                                        baseCurrency = newBaseCurrency;
-                                        print(baseCurrency.code +
-                                            ' ' +
-                                            baseCurrency.rate.toString());
-                                        readCurrencies().then((value) {
-                                          List<Currency> currencies =
-                                              List.from(value);
-                                          for (var item in currencies) {
-                                            Rates currency = rates.firstWhere(
-                                                (element) =>
-                                                    element.code == item.code);
-                                            item.rate = currency.rate /
-                                                baseCurrency.rate;
-                                          }
-                                          updateCurrency(currencies);
-                                          currencyList.baseCurrency =
-                                              baseCurrency;
-                                        });
-                                      });
-                                    });
+                                List<Currency> currencies =
+                                    List.from(snapshot.data!);
+                                double total = 0;
+                                for (var item in currencies) {
+                                  total += item.amount / item.rate;
+                                }
+                                return Text(total.toStringAsFixed(2));
                               default:
                                 return const Text('Error loading data');
                             }
-                          }),
-                    ],
-                  ),
-                  Expanded(flex: 2, child: currencyList),
-                ]),
-              );
-            default:
-              return const Text('Error loading data');
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            //TODO: Update the rates
-          });
-        },
-        child: const Icon(Icons.refresh),
-      ),
-    );
+                          },
+                        ),
+                        const SizedBox(width: 20),
+                        FutureBuilder(
+                            future: readSymbolsAndRates(),
+                            builder: (context, snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.waiting:
+                                  return const CircularProgressIndicator();
+                                case ConnectionState.done:
+                                  symbolsList = List.from(snapshot.data![0]);
+                                  rates = List.from(snapshot.data![1]);
+                                  return DropdownMenu(
+                                      initialSelection: baseCurrency.code,
+                                      dropdownMenuEntries: [
+                                        for (var item in symbolsList)
+                                          DropdownMenuEntry(
+                                            value: item[0],
+                                            label: item[0],
+                                          )
+                                      ],
+                                      enableFilter: true,
+                                      menuHeight: 500.0,
+                                      onSelected: (value) {
+                                        setState(() {
+                                          if (value == baseCurrency.code)
+                                            return;
+                                          if (value == null) return;
+                                          Rates newBaseCurrency = rates.firstWhere(
+                                              (element) =>
+                                                  element.code == value,
+                                              orElse: () => throw Exception(
+                                                  'Currency with code $value not found'));
+
+                                          print(newBaseCurrency.code +
+                                              ' ' +
+                                              newBaseCurrency.rate.toString());
+                                          baseCurrency = newBaseCurrency;
+
+                                          readCurrencies().then((value) {
+                                            List<Currency> currencies =
+                                                List.from(value);
+                                            for (var item in currencies) {
+                                              Rates currency = rates.firstWhere(
+                                                  (element) =>
+                                                      element.code ==
+                                                      item.code);
+                                              item.rate = currency.rate /
+                                                  baseCurrency.rate;
+                                            }
+                                            updateCurrency(currencies);
+                                            currencyList.baseCurrency =
+                                                baseCurrency;
+                                          });
+                                        });
+                                      });
+                                default:
+                                  return const Text('Error loading data');
+                              }
+                            }),
+                      ],
+                    ),
+                    Expanded(flex: 2, child: currencyList),
+                  ]),
+                );
+              default:
+                return const Text('Error loading data');
+            }
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned(
+              left: 30,
+              bottom: 20,
+              child: FloatingActionButton(
+                onPressed: () {},
+                child: const Icon(Icons.add),
+              ),
+            ),
+            Positioned(
+              right: 30,
+              bottom: 20,
+              child: FloatingActionButton(
+                onPressed: () {},
+                child: const Icon(Icons.refresh),
+              ),
+            )
+          ],
+        ));
   }
-
-
 
   @override
   initState() {

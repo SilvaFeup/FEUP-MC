@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import '../Pages/adding_currencies_page.dart';
 import '../Pages/graph_page.dart';
 import '../Pages/wallet_page.dart';
 
@@ -46,7 +44,6 @@ class _CustomNavBarState extends State<CustomNavBar> {
         physics: const NeverScrollableScrollPhysics(),
         children: const <Widget>[
           WalletPage(),
-          AddingCurrenciesPage(),
           GraphPage(),
         ],
       ),
@@ -55,10 +52,6 @@ class _CustomNavBarState extends State<CustomNavBar> {
           BottomNavigationBarItem(
             icon: Icon(Icons.wallet),
             label: "My wallet",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: "New currencies",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart_rounded),
