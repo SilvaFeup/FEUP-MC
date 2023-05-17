@@ -2,13 +2,7 @@ import 'package:currency_converter/models/currency.dart';
 import 'package:currency_converter/models/rates.dart';
 import 'package:flutter/material.dart';
 import '../Controllers/json_controller.dart';
-import '../Services/fixer_service.dart';
 import '../Widgets/currency_list.dart';
-import '../Controllers/JSON_controller.dart';
-
-
-
-
 
 class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
@@ -22,6 +16,7 @@ class _WalletPageState extends State<WalletPage> {
   Rates baseCurrency = Rates(code: 'USD', rate: 1);
   List<Rates> rates = [];
   CurrencyList currencyList = CurrencyList();
+  bool isRefreshButtonDisabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -112,12 +107,29 @@ class _WalletPageState extends State<WalletPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            updateRates();
-          });
-        },
-        child: const Icon(Icons.refresh),
+          if (isRefreshButtonDisabled) {
+            null;
+          }
+          else {
+            //setState(() {
+              isRefreshButtonDisabled = true;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("the request is send, please wait for the response.")
+                )
+              );
+           // });
+            updateRates().then((value) {
+              setState(() {
+                isRefreshButtonDisabled = false;
+              });
+            });
+
+          }},
+
+        child: const Icon(Icons.refresh)
       ),
+
     );
   }
 

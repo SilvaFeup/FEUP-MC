@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:currency_converter/Services/fixer_service.dart';
+import 'package:currency_converter/Widgets/currency_list.dart';
 import 'package:currency_converter/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -33,8 +34,8 @@ Future<void> importAssets() async {
     file.writeAsBytes(baseCurrency.buffer.asUint8List());
     //print('Data directory created');
   } else {
-    //print('Data directory already exists');
-    //print((await getApplicationSupportDirectory()).path);
+    print('Data directory already exists');
+    print((await getApplicationSupportDirectory()).path);
   }
 }
 
@@ -56,7 +57,7 @@ Future<List<List<String>>> readSymbols() async {
 void updateCurrency(List<Currency> currencies) async {
   final Directory appSupportDir = await getApplicationSupportDirectory();
   final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
-  final File file = File(path.join(dataDir.path, 'currencies.json'));
+  final File currenciesFile = File(path.join(dataDir.path, 'currencies.json'));
   List<Currency> currenciesList = List.from(currencies);
 
   Map<String, dynamic> json = {};
@@ -69,44 +70,51 @@ void updateCurrency(List<Currency> currencies) async {
       'rate': currency.rate,
     });
   }
-  file.writeAsString(jsonEncode(json));
+  currenciesFile.writeAsString(jsonEncode(json));
 }
 
-void updateRates() async {
+Future<void> updateRates() async {
   final Directory appSupportDir = await getApplicationSupportDirectory();
   final Directory dataDir = Directory(path.join(appSupportDir.path,'data'));
-  final File file = File(path.join(dataDir.path,'symbols.json'));
-  final content = await file.readAsString();
-  final json = jsonDecode(content);
-  final symbolsJson = json['symbols'];
+  final File symbolsFile = File(path.join(dataDir.path,'symbols.json'));
+  final symbolsContent = await symbolsFile.readAsString();
+  final jsonSymbolContent = jsonDecode(symbolsContent);
+  final symbolsJson = jsonSymbolContent['symbols'];
   List<String> listSymbols = [];
 
   for (var symbol in symbolsJson.entries){
     listSymbols.add(symbol.key);
   }
-
+  //request http
   var fixerService = FixerService();
   var data =  await fixerService.getRates(base, symbols: listSymbols);
 
+  //update the rates.json file
   File requestFile = File(path.join(dataDir.path, 'rates.json'));
-  Map<String, dynamic> jsonFile = {};
-  jsonFile.addAll({
+  Map<String, dynamic> newRatesString = {};
+  newRatesString.addAll({
     'success': data['success'],
     'timestamp': data['timestamp'],
     'base': data['base'],
     'date': data['date'],
     'rates': data['rates']
-  });/*
-  jsonFile['success'] = data['success'];
-  jsonFile['timestamp'] = data['timestamp'];
-  jsonFile['base'] = data['base'];
-  jsonFile['date'] = data['date'];
-  jsonFile['rates'] = data['rates'];*/
+  });
 
+  var jsonRatesString = jsonEncode(newRatesString);
+  requestFile.writeAsStringSync(jsonRatesString);
 
-  var jsonString = jsonEncode(jsonFile);
-  requestFile.writeAsStringSync(jsonString);
-  print('ok');
+  //update rates of the currencies.json file
+  List<Currency> currencies = await readCurrencies();
+  List<Rates> rates = await readRates();
+
+  for (Currency currency in currencies){
+    for (var rate in rates){
+      if(rate.code == currency.code){
+        currency.rate = rate.rate;
+      }
+    }
+  }
+  updateCurrency(currencies);
 }
 
 Future<List<Currency>> readCurrencies() async {
