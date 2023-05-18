@@ -81,11 +81,26 @@ Future<Currency> readBaseCurrency() async {
   var baseCurrency = Currency(
     name: currenciesJson['name'],
     code: currenciesJson['code'],
-    amount: currenciesJson['amount'],
+    amount: currenciesJson['amount'].toDouble(),
     rate: currenciesJson['rate'],
   );
 
   return baseCurrency;
+}
+
+void updateBaseCurrency(Rates baseCurrency) async {
+  final Directory appSupportDir = await getApplicationSupportDirectory();
+  final Directory dataDir = Directory(path.join(appSupportDir.path, 'data'));
+  final File file = File(path.join(dataDir.path, 'base-currency.json'));
+
+  Map<String, dynamic> json = {};
+  json['base-currency'] = {
+    'name': "",
+    'code': baseCurrency.code,
+    'amount': 0,
+    'rate': baseCurrency.rate,
+  };
+  file.writeAsString(jsonEncode(json));
 }
 
 Future<List<Currency>> readCurrencies() async {
@@ -126,8 +141,9 @@ Future<List<Rates>> readRates() async {
   return ratesList;
 }
 
-Future<List> readSymbolsAndRates() async {
+Future<List> readSymbolsRatesAndBaseCurrency() async {
   var rates = await readRates();
   var symbols = await readSymbols();
-  return [symbols, rates];
+  var baseCurrency = await readBaseCurrency();
+  return [symbols, rates, baseCurrency];
 }

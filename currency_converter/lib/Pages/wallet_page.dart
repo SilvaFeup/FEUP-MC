@@ -1,10 +1,9 @@
+import 'package:currency_converter/Controllers/json_controller.dart';
 import 'package:currency_converter/models/currency.dart';
 import 'package:currency_converter/models/rates.dart';
 import 'package:flutter/material.dart';
 import '../Services/fixer_service.dart';
 import '../Widgets/currency_list.dart';
-
-import '../Controllers/JSON_controller.dart';
 
 class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
@@ -59,7 +58,7 @@ class _WalletPageState extends State<WalletPage> {
                         ),
                         const SizedBox(width: 20),
                         FutureBuilder(
-                            future: readSymbolsAndRates(),
+                            future: readSymbolsRatesAndBaseCurrency(),
                             builder: (context, snapshot) {
                               switch (snapshot.connectionState) {
                                 case ConnectionState.waiting:
@@ -67,6 +66,8 @@ class _WalletPageState extends State<WalletPage> {
                                 case ConnectionState.done:
                                   symbolsList = List.from(snapshot.data![0]);
                                   rates = List.from(snapshot.data![1]);
+                                  baseCurrency =
+                                      Rates.fromCurrency(snapshot.data![2]);
                                   return DropdownMenu(
                                       initialSelection: baseCurrency.code,
                                       dropdownMenuEntries: [
@@ -80,20 +81,16 @@ class _WalletPageState extends State<WalletPage> {
                                       menuHeight: 500.0,
                                       onSelected: (value) {
                                         setState(() {
-                                          if (value == baseCurrency.code)
+                                          if (value == baseCurrency.code) {
                                             return;
+                                          }
                                           if (value == null) return;
                                           Rates newBaseCurrency = rates.firstWhere(
                                               (element) =>
                                                   element.code == value,
                                               orElse: () => throw Exception(
                                                   'Currency with code $value not found'));
-
-                                          print(newBaseCurrency.code +
-                                              ' ' +
-                                              newBaseCurrency.rate.toString());
                                           baseCurrency = newBaseCurrency;
-
                                           readCurrencies().then((value) {
                                             List<Currency> currencies =
                                                 List.from(value);
@@ -106,6 +103,7 @@ class _WalletPageState extends State<WalletPage> {
                                                   baseCurrency.rate;
                                             }
                                             updateCurrency(currencies);
+                                            updateBaseCurrency(baseCurrency);
                                             currencyList.baseCurrency =
                                                 baseCurrency;
                                           });
