@@ -24,13 +24,13 @@ class FixerService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
 
-
-        return data;//.map((key, value) => MapEntry(key, value as dynamic));
+        return data; //.map((key, value) => MapEntry(key, value as dynamic));
       } else {
         throw Exception('Failed to get rates');
       }
     } catch (e) {
       throw Exception(e.toString());
+      //TODO: handle exception
     }
   }
 }

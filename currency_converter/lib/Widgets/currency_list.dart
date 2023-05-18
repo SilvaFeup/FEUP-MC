@@ -12,6 +12,22 @@ class CurrencyList extends StatefulWidget {
 
   @override
   State<CurrencyList> createState() => _CurrencyListState();
+
+  Future<void> addCurrency(String code) async {
+    List<Currency> currencies = await readCurrencies();
+    List<Rates> rates = await readRates();
+    Currency baseCurrency = await readBaseCurrency();
+
+    await readSymbols().then((value) {
+      List<String> symbol = value.firstWhere((element) => element[0] == code);
+      currencies.add(Currency(
+          code: code,
+          name: symbol[1],
+          amount: 0,
+          rate: rates.firstWhere((element) => element.code == code).rate / baseCurrency.rate));
+    });
+    updateCurrency(currencies);
+  }
 }
 
 class _CurrencyListState extends State<CurrencyList> {

@@ -45,8 +45,7 @@ class _WalletPageState extends State<WalletPage> {
                               case ConnectionState.waiting:
                                 return const CircularProgressIndicator();
                               case ConnectionState.done:
-                                List<Currency> currencies =
-                                    List.from(snapshot.data!);
+                                List<Currency> currencies = List.from(snapshot.data!);
                                 double total = 0;
                                 for (var item in currencies) {
                                   total += item.amount / item.rate;
@@ -67,8 +66,7 @@ class _WalletPageState extends State<WalletPage> {
                                 case ConnectionState.done:
                                   symbolsList = List.from(snapshot.data![0]);
                                   rates = List.from(snapshot.data![1]);
-                                  baseCurrency =
-                                      Rates.fromCurrency(snapshot.data![2]);
+                                  baseCurrency = Rates.fromCurrency(snapshot.data![2]);
                                   return DropdownMenu(
                                       initialSelection: baseCurrency.code,
                                       dropdownMenuEntries: [
@@ -86,27 +84,18 @@ class _WalletPageState extends State<WalletPage> {
                                             return;
                                           }
                                           if (value == null) return;
-                                          Rates newBaseCurrency = rates.firstWhere(
-                                              (element) =>
-                                                  element.code == value,
-                                              orElse: () => throw Exception(
-                                                  'Currency with code $value not found'));
+                                          Rates newBaseCurrency = rates.firstWhere((element) => element.code == value,
+                                              orElse: () => throw Exception('Currency with code $value not found'));
                                           baseCurrency = newBaseCurrency;
                                           readCurrencies().then((value) {
-                                            List<Currency> currencies =
-                                                List.from(value);
+                                            List<Currency> currencies = List.from(value);
                                             for (var item in currencies) {
-                                              Rates currency = rates.firstWhere(
-                                                  (element) =>
-                                                      element.code ==
-                                                      item.code);
-                                              item.rate = currency.rate /
-                                                  baseCurrency.rate;
+                                              Rates currency = rates.firstWhere((element) => element.code == item.code);
+                                              item.rate = currency.rate / baseCurrency.rate;
                                             }
                                             updateCurrency(currencies);
                                             updateBaseCurrency(baseCurrency);
-                                            currencyList.baseCurrency =
-                                                baseCurrency;
+                                            currencyList.baseCurrency = baseCurrency;
                                           });
                                         });
                                       });
@@ -132,33 +121,67 @@ class _WalletPageState extends State<WalletPage> {
               left: 30,
               bottom: 20,
               child: FloatingActionButton(
-                onPressed: () {},
+                onPressed: () {
+                  TextEditingController inputController =
+                      TextEditingController();
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Add currency'),
+                          content: DropdownMenu(
+                            controller: inputController,
+                            dropdownMenuEntries: [
+                              for (var item in symbolsList)
+                                DropdownMenuEntry(
+                                  value: item[0],
+                                  label: item[0],
+                                )
+                            ],
+                            enableFilter: true,
+                            menuHeight: 200.0,
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('Cancel')),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Future.wait([currencyList.addCurrency(inputController.text)]).then((value) {
+                                    setState(() {});
+                                  });
+                                },
+                                child: const Text('Add'))
+                          ],
+                        );
+                      });
+                },
                 child: const Icon(Icons.add),
               ),
             ),
             Positioned(
-              right: 30,
-              bottom: 20,
-              child: FloatingActionButton(
-                onPressed: () {
-                  if (isRefreshButtonDisabled) {
-                    null;
-                  }
-                  else {
-                    isRefreshButtonDisabled = true;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("the request is send, please wait for the response.")
-                      ));
-                    updateRates().then((value) {
-                      setState(() {
-                        isRefreshButtonDisabled = false;
-                      });
-                    });
-                }},
-                child: const Icon(Icons.refresh)
-              )
-            ),
+                right: 30,
+                bottom: 20,
+                child: FloatingActionButton(
+                    onPressed: () {
+                      if (isRefreshButtonDisabled) {
+                        null;
+                      } else {
+                        isRefreshButtonDisabled = true;
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text(
+                                "the request is send, please wait for the response.")));
+                        updateRates().then((value) {
+                          setState(() {
+                            isRefreshButtonDisabled = false;
+                          });
+                        });
+                      }
+                    },
+                    child: const Icon(Icons.refresh))),
           ],
         ));
   }
