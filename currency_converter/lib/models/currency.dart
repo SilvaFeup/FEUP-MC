@@ -15,7 +15,7 @@ class Currency {
     if (code == destinationCode) {
       return amount;
     } else {
-      return amount * rate;
+      return amount / rate;
     }
   }
 }

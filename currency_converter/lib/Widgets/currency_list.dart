@@ -74,10 +74,20 @@ class _CurrencyListState extends State<CurrencyList> {
                           children: [
                             Text('${currencies[index].amount}  ${currencies[index].code}'),
                             const SizedBox(width: 30),
-                            Text(currencies[index].rate.toStringAsFixed(2)),
+                            Text((1/currencies[index].rate).toStringAsFixed(3)),
                             const SizedBox(width: 30),
-                            Text(
-                                '${(currencies[index].amount * currencies[index].rate).toStringAsFixed(2)} ${widget.baseCurrency.code}'),
+                            FutureBuilder(future: readBaseCurrency(),
+                            builder: (context, snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.waiting:
+                                  return const Text("...");
+                                case ConnectionState.done:
+                                  widget.baseCurrency = Rates.fromCurrency(snapshot.data as Currency);
+                                  return Text('${(currencies[index].amount / currencies[index].rate).toStringAsFixed(2)} ${widget.baseCurrency.code}');
+                                default:
+                                  return const Text('Something went wrong');
+                              }
+                            },),
                             IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
