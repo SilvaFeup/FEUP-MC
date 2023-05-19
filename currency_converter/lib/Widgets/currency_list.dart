@@ -91,15 +91,30 @@ class _CurrencyListState extends State<CurrencyList> {
                             IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
-                                // Call the deleteCurrency function with the code of the currency
-                                widget.deleteCurrency(currencies[index].code);
-                                // Show a snackbar to confirm the deletion
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Currency ${currencies[index].code} deleted'),
-                                  ),
-                                );
-                                widget.onDeleteCurrency();
+                                showDialog(context: context, builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Delete currency'),
+                                    content: Text('Are you sure you want to delete ${currencies[index].name}?'),
+                                    actions: [
+                                      TextButton(onPressed: () {
+                                        Navigator.pop(context);
+                                      }, child: const Text('Cancel')),
+                                      TextButton(onPressed: () {
+                                        Navigator.pop(context);
+                                        // Call the deleteCurrency function with the code of the currency
+                                        widget.deleteCurrency(currencies[index].code);
+                                        // Show a snackbar to confirm the deletion
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('Currency ${currencies[index].code} deleted'),
+                                          ),
+                                        );
+                                        widget.onDeleteCurrency();
+                                      }, child: const Text('Delete')),
+                                    ],
+                                  );
+                                
+                                },);
                               },
                             ),
                           ],
