@@ -168,17 +168,32 @@ class _WalletPageState extends State<WalletPage> {
                 child: FloatingActionButton(
                     onPressed: () {
                       if (isRefreshButtonDisabled) {
+                        print("disabled");
                         null;
                       } else {
                         isRefreshButtonDisabled = true;
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                                "the request is send, please wait for the response.")));
-                        updateRates().then((value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "the request is send, please wait for the response.")));
+                        try {
+                          updateRates().then((value) {
+                            setState(() {
+                              print("pas d'erreur");
+                              isRefreshButtonDisabled = false;
+                            });
+                          });
+                        }on Exception catch(e){
+                          print("exception: $e");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("There is an error with the request, please try later.")));
                           setState(() {
                             isRefreshButtonDisabled = false;
                           });
-                        });
+                        }
+                        catch(error){
+                          print("error: $error");
+                        }
                       }
                     },
                     child: const Icon(Icons.refresh))),

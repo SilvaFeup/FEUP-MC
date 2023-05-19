@@ -86,21 +86,23 @@ Future<void> updateRates() async {
   }
   //request http
   var fixerService = FixerService();
-  var data =  await fixerService.getRates(base, symbols: listSymbols);
+  try {
+    var data = await fixerService.getRates(base, symbols: listSymbols);
+    //update the rates.json file
+    File requestFile = File(path.join(dataDir.path, 'rates.json'));
+    Map<String, dynamic> newRatesString = {};
+    newRatesString.addAll({
+     'success': data['success'],
+      'timestamp': data['timestamp'],
+      'base': data['base'],
+     'date': data['date'],
+      'rates': data['rates']
+    });
 
-  //update the rates.json file
-  File requestFile = File(path.join(dataDir.path, 'rates.json'));
-  Map<String, dynamic> newRatesString = {};
-  newRatesString.addAll({
-    'success': data['success'],
-    'timestamp': data['timestamp'],
-    'base': data['base'],
-    'date': data['date'],
-    'rates': data['rates']
-  });
+    var jsonRatesString = jsonEncode(newRatesString);
+    requestFile.writeAsStringSync(jsonRatesString);
 
-  var jsonRatesString = jsonEncode(newRatesString);
-  requestFile.writeAsStringSync(jsonRatesString);
+  }catch(e){throw Exception(e.toString());}
 
   //update rates of the currencies.json file
   List<Currency> currencies = await readCurrencies();
