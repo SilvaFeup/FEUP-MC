@@ -3,6 +3,7 @@ import 'package:currency_converter/models/currency.dart';
 import 'package:currency_converter/models/rates.dart';
 import 'package:flutter/material.dart';
 import '../Controllers/json_controller.dart';
+// Import the currency_list.dart file
 import '../Widgets/currency_list.dart';
 
 class WalletPage extends StatefulWidget {
@@ -16,8 +17,14 @@ class _WalletPageState extends State<WalletPage> {
   List<List<String>> symbolsList = [];
   Rates baseCurrency = Rates(code: 'USD', rate: 1);
   List<Rates> rates = [];
-  CurrencyList currencyList = CurrencyList();
+  late CurrencyList currencyList;
   bool isRefreshButtonDisabled = false;
+
+  void deleteCurrency() {
+    setState(() {
+      // Delete the currency
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,5 +197,8 @@ class _WalletPageState extends State<WalletPage> {
   initState() {
     super.initState();
     // Load the currencies and rates from the JSON files
+    currencyList = CurrencyList(
+      onDeleteCurrency: deleteCurrency,
+    );
   }
 }

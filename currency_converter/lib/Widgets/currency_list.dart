@@ -9,8 +9,9 @@ import '../models/rates.dart';
 class CurrencyList extends StatefulWidget {
   Rates baseCurrency = Rates(code: 'USD', rate: 1);
 
+  final void Function() onDeleteCurrency;
 
-  CurrencyList({Key? key}) : super(key: key);
+  CurrencyList({Key? key, required this.onDeleteCurrency}) : super(key: key);
 
   @override
   State<CurrencyList> createState() => _CurrencyListState();
@@ -71,12 +72,12 @@ class _CurrencyListState extends State<CurrencyList> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                                '${(currencies[index].amount / currencies[index].rate).toStringAsFixed(2)} ${widget.baseCurrency.code}'),
+                            Text('${currencies[index].amount}  ${currencies[index].code}'),
                             const SizedBox(width: 30),
                             Text(currencies[index].rate.toStringAsFixed(2)),
                             const SizedBox(width: 30),
-                            Text('${currencies[index].amount}  ${currencies[index].code}'),
+                            Text(
+                                '${(currencies[index].amount * currencies[index].rate).toStringAsFixed(2)} ${widget.baseCurrency.code}'),
                             IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
@@ -88,6 +89,7 @@ class _CurrencyListState extends State<CurrencyList> {
                                     content: Text('Currency ${currencies[index].code} deleted'),
                                   ),
                                 );
+                                widget.onDeleteCurrency();
                               },
                             ),
                           ],
