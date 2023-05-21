@@ -63,20 +63,21 @@ class _CurrencyListState extends State<CurrencyList> {
                 itemCount: currencies.length,
                 itemBuilder: (context, index) {
                   return Card(
-                    key: ValueKey(currencies[index].code),
-                    child: ListTile(
-                        leading: CircleAvatar(
-                          child: Text(currencies[index].code),
-                        ),
+                    child : ListTile(
+                            leading: CircleAvatar(
+                              child: Text(currencies[index].code),
+                            ),
 
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('${currencies[index].amount}  ${currencies[index].code}'),
-                            const SizedBox(width: 30),
-                            Text((1/currencies[index].rate).toStringAsFixed(3)),
-                            const SizedBox(width: 30),
-                            FutureBuilder(future: readBaseCurrency(),
+
+                            title:  Center(child: Text(currencies[index].name)),
+                            subtitle: Center ( child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('${currencies[index].amount}  ${currencies[index].code}'),
+                                const SizedBox(width: 30),
+                                Text(currencies[index].rate.toStringAsFixed(3)),
+                                const SizedBox(width: 30),
+                                FutureBuilder(future: readBaseCurrency(),
                             builder: (context, snapshot) {
                               switch (snapshot.connectionState) {
                                 case ConnectionState.waiting:
@@ -88,7 +89,10 @@ class _CurrencyListState extends State<CurrencyList> {
                                   return const Text('Something went wrong');
                               }
                             },),
-                            IconButton(
+                              ],
+                            )),
+
+                            trailing: IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
                                 showDialog(context: context, builder: (context) {
@@ -117,47 +121,45 @@ class _CurrencyListState extends State<CurrencyList> {
                                 },);
                               },
                             ),
-                          ],
-                        ),
-                        onTap: () {
-                          amountController.text =
-                              currencies[index].amount.toString();
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text(
-                                    "Change amount of ${currencies[index].code}"),
-                                content: TextFormField(
-                                  controller: amountController,
-                                  keyboardType: TextInputType.number,
-                                  decoration: const InputDecoration(
-                                    hintText: 'Enter amount',
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Cancel')),
-                                  TextButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          currencies[index].amount =
-                                              double.parse(
-                                                  amountController.text);
-                                          updateCurrency(currencies);
-                                        });
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Save')),
-                                ],
+                            onTap: () {
+                              amountController.text =
+                                  currencies[index].amount.toString();
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                        "Change amount of ${currencies[index].code}"),
+                                    content: TextFormField(
+                                      controller: amountController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        hintText: 'Enter amount',
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Cancel')),
+                                      TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              currencies[index].amount =
+                                                  double.parse(
+                                                      amountController.text);
+                                              updateCurrency(currencies);
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Save')),
+                                    ],
+                                  );
+                                },
                               );
-                            },
-                          );
-                        }),
-                  );
+                            }),
+                      );
                 },
               );
             default:
