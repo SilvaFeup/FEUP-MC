@@ -44,7 +44,7 @@ class _WalletPageState extends State<WalletPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Total: '),
+                        const Text('Total: ', style: TextStyle(fontSize: 20)),
                         FutureBuilder(
                           future: readCurrencies(),
                           builder: (context, snapshot) {
@@ -57,7 +57,7 @@ class _WalletPageState extends State<WalletPage> {
                                 for (var item in currencies) {
                                   total += item.amount / item.rate;
                                 }
-                                return Text(total.toStringAsFixed(2));
+                                return Text(total.toStringAsFixed(2), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold));
                               default:
                                 return const Text('Error loading data');
                             }

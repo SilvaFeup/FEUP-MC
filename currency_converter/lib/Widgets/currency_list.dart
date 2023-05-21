@@ -69,11 +69,11 @@ class _CurrencyListState extends State<CurrencyList> {
                             ),
 
 
-                            title:  Center(child: Text(currencies[index].name)),
+                            title:  Center(child: Text(currencies[index].name, style: const TextStyle(fontWeight: FontWeight.bold))),
                             subtitle: Center ( child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('${currencies[index].amount}  ${currencies[index].code}'),
+                                Text('${currencies[index].amount}  ${currencies[index].code}', style: const TextStyle(fontWeight: FontWeight.bold)),
                                 const SizedBox(width: 30),
                                 Text(currencies[index].rate.toStringAsFixed(3)),
                                 const SizedBox(width: 30),
